@@ -1,2 +1,3 @@
 # my-sand-table
-This is the firmware of my sand table, inspired by the wonderful tables from Sisyphus Industries.
+Die Firmware besteht aus einem Python-Script, welches nach dem Hochfahren des Raspberry Pis automatisch gestartet wird.
+Das Script lädt die auf dem Tisch vorhandene Playlist von .thr Dateien   und führt die nächste .thr Datei aus.
