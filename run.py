@@ -1,12 +1,12 @@
 import signal 
-import controller
+from controller import Controller
 
 def main():
     try:
         signal.signal(signal.SIGINT, signal_handler)
 
         print("initializing controller")
-        controller.init()
+        controller = Controller()
         controller.run()
     except KeyboardInterrupt:
         print("terminating the program through KeyboardInterrupt")
