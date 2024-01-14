@@ -1,12 +1,12 @@
-import signal 
+import signal, time
 from Controller import Controller
 
+controller = Controller()
 def main():
     try:
         signal.signal(signal.SIGINT, signal_handler)
 
         print("initializing controller")
-        controller = Controller()
 
         #Calibration-file exists? Yes: read it, No: --> calibrate
 
