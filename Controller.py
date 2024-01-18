@@ -2,7 +2,7 @@ import glob, os, math, random, time, threading
 import numpy as np
 #import utils.GPIOs as GPIOs
 import utils.GPIOs_Mock as GPIOs
-from utils.TMC2209 import TMC2209
+from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 from utils.coord_functions import get_steps, calc_deltasteps, coors_to_steps
 
 class Controller():
@@ -24,9 +24,9 @@ class Controller():
     def run_M_Theta(self, steps, delay):
         if steps != 0 and delay >= 0:
             if steps > 0:
-                self.M_Theta.turn_steps(Dir='forward', steps=abs(steps), stepdelay=delay)
+                self.M_Theta.turn_steps(Dir=MOTOR_DIR_FORWARD, steps=abs(steps), stepdelay=delay)
             else:
-                self.M_Theta.turn_steps(Dir='backward', steps=abs(steps), stepdelay=delay)
+                self.M_Theta.turn_steps(Dir=MOTOR_DIR_BACKWARD, steps=abs(steps), stepdelay=delay)
 
         self.M_Theta.stop()
         self.M_Theta.running = False
@@ -36,15 +36,23 @@ class Controller():
     def run_M_Rho(self, steps, delay):
         if steps != 0 and delay >= 0:
             if steps > 0:
-                self.M_Rho.turn_steps(Dir='forward', steps=abs(steps), stepdelay=delay)
+                self.M_Rho.turn_steps(Dir=MOTOR_DIR_FORWARD, steps=abs(steps), stepdelay=delay)
             else:
-                self.M_Rho.turn_steps(Dir='backward', steps=abs(steps), stepdelay=delay)
+                self.M_Rho.turn_steps(Dir=MOTOR_DIR_BACKWARD, steps=abs(steps), stepdelay=delay)
 
         self.M_Rho.stop()
         self.M_Rho.running = False
 
         # print("M_Rho done!")
     
+    def run_M_Rho_Until_Switch(self, dir):
+        if(dir == MOTOR_DIR_FORWARD):
+            return self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_OUT, stepdelay=0.0005)
+        elif(dir == MOTOR_DIR_BACKWARD):
+            return self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_IN, stepdelay=0.0005)
+        else:
+            print("Unknown direction: ", dir)
+
     def add_delays(self, steps):
         delays = np.array([0, 0])
         for s in steps:
@@ -110,7 +118,7 @@ class Controller():
         coors = np.array([[0, 0], [0.005, 0.001]])
 
 
-        steps = coors_to_steps(coors)
+        coors_to_steps(coors)
         steps = calc_deltasteps(coors)
         steps_with_delays = self.add_delays(steps)
 

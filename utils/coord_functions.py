@@ -34,21 +34,18 @@ def get_steps(thr_file):
     #print("steps 3:", steps)
     return steps
 
-def calc_deltasteps(steps):
+def calc_deltasteps(deltasteps):
     #print("steps[1:]", steps[1:]) #alles aus steps ohne die erste Zeile
     #print("steps[:-1]", steps[:-1]) #alles aus steps ohne die letzte Zeile
-    return steps[1:] - steps[:-1]
+    print ("calc_deltasteps(", deltasteps, ")")
+    return deltasteps[1:] - deltasteps[:-1]
 
 def coors_to_steps(coors):
     print("coors_to_steps(", coors, ")")
-    steps = np.array([0, 0])
 
     for coor in coors:
         #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
-        theta = int(THETA_STEPS_FULL_TURN * coor[0])
-        rho = int(RHO_STEPS_FULL_LENGTH * coor[1])
+        coor[0] = int(THETA_STEPS_FULL_TURN * coor[0])
+        coor[1] = int(RHO_STEPS_FULL_LENGTH * coor[1])
 
-        steps = np.vstack((steps, [theta, rho]))
-
-    return steps
 

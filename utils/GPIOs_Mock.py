@@ -17,12 +17,29 @@ SWITCH_IN = 6
 NEXTTABLE_LED = 19
 NEXTTABLE_BUTTON = 26
 
+NbrOfCallsUntilMockValue = {
+    SWITCH_IN: [0, 50, False, True],
+    SWITCH_OUT: [0, 50, False, True],
+    NEXTTABLE_BUTTON: [0, 2, False, True]
+}
+
+
 def init():
     print("initializing GPIOs...")
 
 def input(pin):
     print("GPIOs.input pin:", pin)
-    return 0
+
+    #lookup pin in Dictionary for the mock-values
+    mockData = NbrOfCallsUntilMockValue[pin]
+    if mockData == None:
+        return 0
+    
+    #increment counter
+    mockData[0] += 1
+
+    #return data
+    return mockData[2] if mockData[0] < mockData[1] else mockData[3]
 
 def output(pin, value):
     print("GPIOs.output pin:", pin, "value:", value)

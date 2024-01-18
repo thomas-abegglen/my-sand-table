@@ -2,13 +2,17 @@
 import utils.GPIOs_Mock as GPIOs
 import time
 
+MOTOR_DIR_FORWARD = 'forward'
+MOTOR_DIR_BACKWARD = 'backward'
 
 MotorDir = [
-    'forward',
-    'backward',
+    MOTOR_DIR_FORWARD,
+    MOTOR_DIR_BACKWARD,
 ]
 
 class TMC2209():
+    MOTOR_DIR_FORWARD = 'forward'
+    MOTOR_DIR_BACKWARD = 'backward'
 
     def __init__(self, dir_pin, step_pin, enable_pin):
         self.dir_pin = dir_pin
@@ -49,6 +53,8 @@ class TMC2209():
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay)
             steps -= 1
+        
+        print("turn_steps finished")
 
 
     def turn_until_switch(self, Dir, limit_switch, stepdelay):
@@ -67,7 +73,7 @@ class TMC2209():
 
         # print("turn step: ",steps)
         pos = 0
-        while GPIOs.input(limit_switch) == 1 and self.running:
+        while not GPIOs.input(limit_switch) and self.running:
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
             self.digital_write(self.step_pin, False)
@@ -98,7 +104,7 @@ class TMC2209():
 
         # print("turn step: ",steps)
         while steps > 0 and self.running:
-            if GPIOs.input(limit_switch) == 0:
+            if not GPIOs.input(limit_switch):
                 return False
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
