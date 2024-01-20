@@ -1,4 +1,4 @@
-#import utils.GPIOs as GPIO
+#import utils.GPIOs as GPIOs
 import utils.GPIOs_Mock as GPIOs
 import time
 
@@ -58,6 +58,11 @@ class TMC2209():
             time.sleep(stepdelay)
             steps -= 1
         
+        if limit_switch != None and not GPIOs.input(limit_switch):
+            #limit_switch is pressed, return 5 steps
+            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
+
+
         current_time = time.localtime()
         print("%H:%M:%S - turn_steps finished", current_time)
 
@@ -84,6 +89,11 @@ class TMC2209():
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay)
             pos += 1
+
+        if limit_switch != None and not GPIOs.input(limit_switch):
+            #limit_switch is pressed, return 5 steps
+            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
+            pos -= 5
 
         if Dir == MotorDir[0]:
             return pos

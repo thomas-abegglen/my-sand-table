@@ -14,7 +14,7 @@ def getMotorPinStates():
     print("Theta Motor PinStates: ")
     print("Enable:", GPIOs.input(GPIOs.MOTOR_THETA_ENABLE), "Dir:", GPIOs.input(GPIOs.MOTOR_THETA_DIR), "Motor relay:", GPIOs.input(GPIOs.MOTOR_THETA_RELAY))
     print("Rho Motor PinStates: ")
-    print("Enable:", GPIOs.input(GPIOs.MOTOR_RHO_ENABLE), "Dir:", GPIOs.input(GPIOs.MOTOR_RHO_DIR), "Motor relay:", GPIOs.input(GPIOs.MOTOR_RHO_RELAY))
+    print("Enable:", GPIOs.input(GPIOs.MOTOR_RHO_ENABLE), "Dir:", GPIOs.input(GPIOs.MOTOR_RHO_DIR), "Motor relay:", GPIOs.input(GPIOs.MOTOR_RHO_RELAY), "IN-switch:", GPIOs.input(GPIOs.SWITCH_IN), "OUT-switch:", GPIOs.input(GPIOs.SWITCH_OUT))
 
 def performStepsTheta():
     print("How many steps?")
