@@ -81,7 +81,7 @@ def moveToCoordinate(controller):
 def printMenu_ThetaMotor():
     while(True):
         os.system('clear')
-        print("Menu ThetaMotor\r\n1) Get Pin States\r\n2) Set Enable HIGH\r\n3) Set Enable LOW\r\n4) Set Direction HIGH")
+        print("Menu Theta-Motor\r\n1) Get Pin States\r\n2) Set Enable HIGH\r\n3) Set Enable LOW\r\n4) Set Direction HIGH")
         print("5) Set Direction LOW\r\n6)Set Motor relay HIGH\r\n7) Set Motor relay LOW\r\n8) Perform steps\r\n0) Exit")
         menuChoice = input()
         
@@ -122,7 +122,7 @@ def printMenu_ThetaMotor():
 def printMenu_RhoMotor():
     while(True):
         os.system('clear')
-        print("Menu RhoMotor\r\n1) Get Pin States\r\n2) Set Enable HIGH\r\n3) Set Enable LOW\r\n4) Set Direction HIGH")
+        print("Menu Rho-Motor\r\n1) Get Pin States\r\n2) Set Enable HIGH\r\n3) Set Enable LOW\r\n4) Set Direction HIGH")
         print("5) Set Direction LOW\r\n6) Set Motor relay HIGH\r\n7) Set Motor relay LOW\r\n8) Perform steps\r\n0) Exit")
         menuChoice = input()
         

@@ -18,8 +18,8 @@ NEXTTABLE_LED = 19
 NEXTTABLE_BUTTON = 26
 
 NbrOfCallsUntilMockValue = {
-    SWITCH_IN: [0, 50, False, True],
-    SWITCH_OUT: [0, 50, False, True],
+    SWITCH_IN: [0, 50, True, False],
+    SWITCH_OUT: [0, 50, True, False],
     NEXTTABLE_BUTTON: [0, 2, False, True]
 }
 

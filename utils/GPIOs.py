@@ -39,8 +39,8 @@ def init():
     GPIO.setup(MOTOR_THETA_STEP, GPIO.OUT)
     GPIO.setup(MOTOR_THETA_RELAY, GPIO.OUT)
 
-    GPIO.setup(SWITCH_OUT, GPIO.IN)
-    GPIO.setup(SWITCH_IN, GPIO.IN)
+    GPIO.setup(SWITCH_OUT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(SWITCH_IN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     GPIO.setup(NEXTTABLE_LED, GPIO.OUT)
     GPIO.setup(NEXTTABLE_BUTTON, GPIO.IN)

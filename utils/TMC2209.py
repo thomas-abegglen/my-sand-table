@@ -14,10 +14,11 @@ class TMC2209():
     MOTOR_DIR_FORWARD = 'forward'
     MOTOR_DIR_BACKWARD = 'backward'
 
-    def __init__(self, dir_pin, step_pin, enable_pin):
+    def __init__(self, dir_pin, step_pin, enable_pin, limit_switches):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
         self.enable_pin = enable_pin
+        self.limit_switches = limit_switches
         self.running = True
 
 
@@ -30,14 +31,17 @@ class TMC2209():
 
 
     def turn_steps(self, Dir, steps, stepdelay):
+        limit_switch = 0
         if (Dir == MotorDir[0]):
             # print("forward")
             self.digital_write(self.enable_pin, 0)
             self.digital_write(self.dir_pin, 0)
+            limit_switch = self.limit_switches[0] if self.limit_switches != None else None
         elif (Dir == MotorDir[1]):
             # print("backward")
             self.digital_write(self.enable_pin, 0)
             self.digital_write(self.dir_pin, 1)
+            limit_switch = self.limit_switches[1] if self.limit_switches != None else None
         else:
             # print("the dir must be : 'forward' or 'backward'")
             self.digital_write(self.enable_pin, 1)
@@ -47,14 +51,15 @@ class TMC2209():
             return
 
         # print("turn step: ",steps)
-        while steps > 0 and self.running:
+        while steps > 0 and self.running and (GPIOs.input(limit_switch) if limit_switch != None else True):
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay)
             steps -= 1
         
-        print("turn_steps finished")
+        current_time = time.localtime()
+        print("%H:%M:%S - turn_steps finished", current_time)
 
 
     def turn_until_switch(self, Dir, limit_switch, stepdelay):
@@ -73,7 +78,7 @@ class TMC2209():
 
         # print("turn step: ",steps)
         pos = 0
-        while not GPIOs.input(limit_switch) and self.running:
+        while self.running and GPIOs.input(limit_switch):
             self.digital_write(self.step_pin, True)
             time.sleep(stepdelay)
             self.digital_write(self.step_pin, False)
