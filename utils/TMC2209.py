@@ -50,21 +50,23 @@ class TMC2209():
         if (steps == 0):
             return
 
+        limitSwitchPressed = False
         # print("turn step: ",steps)
-        while steps > 0 and self.running and (GPIOs.input(limit_switch) if limit_switch != None else True):
+        while steps > 0 and self.running:
             self.digital_write(self.step_pin, True)
-            time.sleep(stepdelay)
+            halfStepdelay = int(stepdelay/2)
+            time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
-            time.sleep(stepdelay)
+            time.sleep(stepdelay-halfStepdelay)
             steps -= 1
+            if limit_switch != None and not GPIOs.input(limit_switch):
+                limitSwitchPressed = True
+                break
         
-        if limit_switch != None and not GPIOs.input(limit_switch):
+        if limitSwitchPressed:
+            print("limit_switch is pressed, return 5 steps")
             #limit_switch is pressed, return 5 steps
             self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
-
-
-        current_time = time.localtime()
-        print("%H:%M:%S - turn_steps finished", current_time)
 
 
     def turn_until_switch(self, Dir, limit_switch, stepdelay):
@@ -83,14 +85,21 @@ class TMC2209():
 
         # print("turn step: ",steps)
         pos = 0
-        while self.running and GPIOs.input(limit_switch):
+        limitSwitchPressed = False
+        while self.running:
             self.digital_write(self.step_pin, True)
-            time.sleep(stepdelay)
+            halfStepdelay = int(stepdelay/2)
+            time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
-            time.sleep(stepdelay)
+            time.sleep(stepdelay-halfStepdelay)
             pos += 1
 
-        if limit_switch != None and not GPIOs.input(limit_switch):
+            if GPIOs.input(limit_switch):
+                limitSwitchPressed = True
+                break
+
+        if limitSwitchPressed:
+            print("limit_switch is pressed, return 5 steps")
             #limit_switch is pressed, return 5 steps
             self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
             pos -= 5
@@ -122,9 +131,10 @@ class TMC2209():
             if not GPIOs.input(limit_switch):
                 return False
             self.digital_write(self.step_pin, True)
-            time.sleep(stepdelay)
+            halfStepdelay = int(stepdelay/2)
+            time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
-            time.sleep(stepdelay)
+            time.sleep(stepdelay-halfStepdelay)
             steps -= 1
 
         return True
