@@ -54,7 +54,7 @@ class TMC2209():
         # print("turn step: ",steps)
         while steps > 0 and self.running:
             self.digital_write(self.step_pin, True)
-            halfStepdelay = int(stepdelay/2)
+            halfStepdelay = stepdelay/2
             time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay-halfStepdelay)
@@ -66,6 +66,8 @@ class TMC2209():
         if limitSwitchPressed:
             print("limit_switch is pressed, return 5 steps")
             #limit_switch is pressed, return 5 steps
+            print("determine direction: current dir:", Dir, "new dir:", MotorDir[1] if Dir == MotorDir[0] else MotorDir[0])
+
             self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
 
 
@@ -88,19 +90,22 @@ class TMC2209():
         limitSwitchPressed = False
         while self.running:
             self.digital_write(self.step_pin, True)
-            halfStepdelay = int(stepdelay/2)
+            halfStepdelay = stepdelay/2
             time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay-halfStepdelay)
             pos += 1
 
-            if GPIOs.input(limit_switch):
+            if not GPIOs.input(limit_switch):
                 limitSwitchPressed = True
                 break
 
         if limitSwitchPressed:
             print("limit_switch is pressed, return 5 steps")
             #limit_switch is pressed, return 5 steps
+            
+            print("determine direction: current dir:", Dir, "new dir:", MotorDir[1] if Dir == MotorDir[0] else MotorDir[0])
+
             self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
             pos -= 5
 
@@ -131,7 +136,7 @@ class TMC2209():
             if not GPIOs.input(limit_switch):
                 return False
             self.digital_write(self.step_pin, True)
-            halfStepdelay = int(stepdelay/2)
+            halfStepdelay = stepdelay/2
             time.sleep(halfStepdelay)
             self.digital_write(self.step_pin, False)
             time.sleep(stepdelay-halfStepdelay)
