@@ -64,11 +64,11 @@ class TMC2209():
                 break
         
         if limitSwitchPressed:
-            print("limit_switch is pressed, return 5 steps")
+            print("limit_switch is pressed, return 40 steps")
             #limit_switch is pressed, return 5 steps
             print("determine direction: current dir:", Dir, "new dir:", MotorDir[1] if Dir == MotorDir[0] else MotorDir[0])
 
-            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
+            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 40, 0.0005)
 
 
     def turn_until_switch(self, Dir, limit_switch, stepdelay):
@@ -101,13 +101,13 @@ class TMC2209():
                 break
 
         if limitSwitchPressed:
-            print("limit_switch is pressed, return 5 steps")
+            print("limit_switch is pressed, return 40 steps")
             #limit_switch is pressed, return 5 steps
             
             print("determine direction: current dir:", Dir, "new dir:", MotorDir[1] if Dir == MotorDir[0] else MotorDir[0])
 
-            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 5, 0.0005)
-            pos -= 5
+            self.turn_steps(MotorDir[1] if Dir == MotorDir[0] else MotorDir[0], 40, 0.0005)
+            pos -= 40
 
         if Dir == MotorDir[0]:
             return pos
