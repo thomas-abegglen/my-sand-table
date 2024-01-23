@@ -1,5 +1,8 @@
 import signal, time
 from Controller import Controller
+from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
+
+
 
 controller = Controller()
 def main():
@@ -9,6 +12,8 @@ def main():
         print("initializing controller")
 
         #Calibration-file exists? Yes: read it, No: --> calibrate
+        #so far, we assume: no calibration file exists, so we begin with calibration:
+        controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         #so far, we assume: no pending drawing, so we start with a clear_table
@@ -25,7 +30,7 @@ def main():
 
             #clear table
             if clearTable:
-                controller.clear_table()
+                controller.clear_table(controller.IN_OUT)
 
             #draw next file
             #draw_theta_rho_file(thr_file)
@@ -43,6 +48,7 @@ def main():
 
 def signal_handler(sig, frame):
     print("terminating the program through SIGINT")
+    running = False
     controller.shutdown()
 
 if __name__ == '__main__':

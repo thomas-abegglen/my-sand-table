@@ -10,6 +10,18 @@ class Controller():
     DEFAULT_SPEED = 800
     MAX_SPEED = 2000
 
+    IN_OUT = "in_out",
+    OUT_IN = "out_in",
+    OUT_OUT = "out_out",
+    IN_IN = "in_in"
+
+    Clear_Modes = [
+        IN_OUT,
+        OUT_IN,
+        OUT_OUT,
+        IN_IN
+    ]
+
     M_Theta = TMC2209(dir_pin=GPIOs.MOTOR_THETA_DIR, step_pin=GPIOs.MOTOR_THETA_STEP, enable_pin=GPIOs.MOTOR_THETA_ENABLE, limit_switches=None)
     M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
     clearTable = False
@@ -61,15 +73,15 @@ class Controller():
             print("elapsed_time:", elapsed_time)
             if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_>
                 print("Rotor mit DEFAULT_SPEED")
-                Theta_delay = round(1 / self.DEFAULT_SPEED, 5) #delay für Theta mit DEFAULT_SPEED berechnen
-                Rho_delay = round(elapsed_time / abs(s[1]), 5) if s[1] != 0 else None #delay für Linear berechnen (sollte zwischen DEFAULT_SPEED und>
+                Theta_delay = 1 / self.DEFAULT_SPEED #delay für Theta mit DEFAULT_SPEED berechnen
+                Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Linear berechnen (sollte zwischen DEFAULT_SPEED und>
                 print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
             else:
                 #entweder ist die theta-Verschiebung 0 oder es müsste für Linear schneller gehen als mit MAX_SPEED
                 print("Linear mit MAX_SPEED")
                 min_time = abs(s[1]) / self.MAX_SPEED #wie lange dauert rho-Verschiebung mit MAX_SPEED?
-                Theta_delay = round(min_time / abs(s[0]), 5) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED li>
-                Rho_delay = round(1 / self.MAX_SPEED, 5) #delay für Linear mit MAX_SPEED berechnen
+                Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED li>
+                Rho_delay = 1 / self.MAX_SPEED #delay für Linear mit MAX_SPEED berechnen
                 print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
     
             delays = np.vstack((delays, [Theta_delay, Rho_delay]))
@@ -112,11 +124,19 @@ class Controller():
         self.M_Rho.stop()
         print("\n---------- Motors Stopped! ----------")
 
-    def clear_table(self):
+    def clear_table(self, clear_mode):
         print("Clearing table")
-        #coors = np.array([[0, 0], [628, 1]])
-        coors = np.array([[0, 0], [0.005, 0.001]])
 
+        if clear_mode == self.IN_OUT:
+            coors = np.array([[0, 0], [628, 1]])
+        elif clear_mode == self.OUT_IN:
+            coors = np.array([[0, 1], [628, 1]])
+        elif clear_mode == self.OUT_OUT:
+            coors = np.array([[0, 1], [314, 0], [628, 1]])
+        elif clear_mode == self.IN_IN:
+            coors = np.array([[0, 0], [314, 1], [628, 0]])
+        else:
+            coors = np.array([[0, 0], [628, 1]])
 
         coors_to_steps(coors)
         steps = calc_deltasteps(coors)
