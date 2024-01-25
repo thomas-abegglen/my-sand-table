@@ -100,11 +100,11 @@ class Controller():
         self.draw_steps_with_delays(steps_with_delays, instr_nbr)
 
     def draw_steps_with_delays(self, steps_with_delays, instr_nbr = 0):
-        for swd in range(instr_nbr, len(steps_with_delays)):
-            print("rotor step:", swd[0], "linear step:", swd[1], "rotor delay:", swd[2], "linear delay:", swd[3])
+        for i in range(instr_nbr, len(steps_with_delays)):
+            print("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
             #pass values to M_Theta/M_Rho and create threads
-            M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(swd[0], swd[2],))
-            M_Rho_Thread = threading.Thread(target=self.run_M_Rho, args=(swd[1], swd[3],))
+            M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(steps_with_delays[i][0], steps_with_delays[i][2],))
+            M_Rho_Thread = threading.Thread(target=self.run_M_Rho, args=(steps_with_delays[i][1], steps_with_delays[i][3],))
 
             #start threads
             self.M_Theta.running = True
