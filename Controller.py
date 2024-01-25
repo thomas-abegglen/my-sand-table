@@ -92,15 +92,15 @@ class Controller():
 
         return steps_with_delays
 
-    def draw_theta_rho_file(self, thr_file):
+    def draw_theta_rho_file(self, thr_file, instr_nbr = 0):
         steps = get_steps(thr_file)
         steps = calc_deltasteps(steps)
         steps_with_delays = self.add_delays(steps)
 
-        self.draw_steps_with_delays(steps_with_delays)
+        self.draw_steps_with_delays(steps_with_delays, instr_nbr)
 
-    def draw_steps_with_delays(self, steps_with_delays):
-        for swd in steps_with_delays:
+    def draw_steps_with_delays(self, steps_with_delays, instr_nbr = 0):
+        for swd in range(instr_nbr, len(steps_with_delays)):
             print("rotor step:", swd[0], "linear step:", swd[1], "rotor delay:", swd[2], "linear delay:", swd[3])
             #pass values to M_Theta/M_Rho and create threads
             M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(swd[0], swd[2],))

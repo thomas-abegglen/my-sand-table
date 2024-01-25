@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 MICROSTEPS = 8
-THETA_STEPS_FULL_TURN = 200 * 10 * MICROSTEPS / math.pi
+THETA_STEPS_FULL_TURN = 200 * 10 * MICROSTEPS / (2 * math.pi)
 RHO_STEPS_FULL_LENGTH = 1200 * MICROSTEPS
 
 
@@ -44,9 +44,10 @@ def calc_deltasteps(deltasteps):
 def coors_to_steps(coors):
     print("coors_to_steps(", coors, ")")
 
-    for coor in coors:
+    steps = np.copy(coors)
+    for step in steps:
         #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
-        coor[0] = int(THETA_STEPS_FULL_TURN * coor[0])
-        coor[1] = int(RHO_STEPS_FULL_LENGTH * coor[1])
+        step[0] = int(THETA_STEPS_FULL_TURN * step[0])
+        step[1] = int(RHO_STEPS_FULL_LENGTH * step[1])
 
 

@@ -48,11 +48,11 @@ def init():
     #enable Power-Button-LED
     GPIO.output(SHUTDOWN_LED, GPIO.HIGH)
 
-    #set Motor-Relays HIGH
-    GPIO.output(MOTOR_RHO_RELAY, GPIO.HIGH)
-    GPIO.output(MOTOR_THETA_RELAY, GPIO.HIGH)
+    #enable Motor-Relays (set them to LOW)
+    GPIO.output(MOTOR_RHO_RELAY, GPIO.LOW)
+    GPIO.output(MOTOR_THETA_RELAY, GPIO.LOW)
 
-    #set enable of both Motors to high (say: disable it)
+    #set enable of both Motors to high (say: disable it). The TMC2209 software driver will enable them if needed
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
 
@@ -68,8 +68,8 @@ def cleanup():
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
 
-    #set Motor-Relays LOW
-    GPIO.output(MOTOR_RHO_RELAY, GPIO.LOW)
-    GPIO.output(MOTOR_THETA_RELAY, GPIO.LOW)
+    #disable Motor-Relays 
+    GPIO.output(MOTOR_RHO_RELAY, GPIO.HIGH)
+    GPIO.output(MOTOR_THETA_RELAY, GPIO.HIGH)
 
     GPIO.cleanup()
