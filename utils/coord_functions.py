@@ -50,5 +50,5 @@ def coors_to_steps(coors):
         step[0] = int(THETA_STEPS_FULL_TURN * step[0])
         step[1] = int(RHO_STEPS_FULL_LENGTH * step[1])
 
-
+    return steps
 
