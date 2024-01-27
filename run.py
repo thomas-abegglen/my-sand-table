@@ -43,14 +43,14 @@ def main():
 
             #clear table
             if clearTable:
-                controller.clear_table(controller.IN_OUT)
+                controller.clear_table(controller.OUT_IN)
 
             #draw next file
 
             #determine next file to draw
             thr_file = "test.thr"
 
-            #draw_theta_rho_file(thr_file)
+            controller.draw_theta_rho_file(thr_file)
 
             #temp: don't run endlessly:
             running = False

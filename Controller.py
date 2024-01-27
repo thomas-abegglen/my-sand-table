@@ -188,7 +188,7 @@ class Controller():
             M_Theta_Thread.join()
             M_Rho_Thread.join()
 
-            if pendingShutdown:
+            if self.pendingShutdown:
                 #dump pending steps_with_delays to file
                 with open(FILENAME_PENDING_DRAWING, "w") as json_file:
                     json.dump(steps_with_delays[i:], json_file)
@@ -206,19 +206,19 @@ class Controller():
         print("Clearing table")
 
         if clear_mode == self.IN_OUT:
-            coors = np.array([[0, 0], [628, 1]])
+            coors = np.array([[0, 0], [6.28, 1]])
         elif clear_mode == self.OUT_IN:
-            coors = np.array([[0, 1], [628, 1]])
+            coors = np.array([[0, 1], [6.28, 0]])
         elif clear_mode == self.OUT_OUT:
-            coors = np.array([[0, 1], [314, 0], [628, 1]])
+            coors = np.array([[0, 1], [3.14, 0], [6.28, 1]])
         elif clear_mode == self.IN_IN:
-            coors = np.array([[0, 0], [314, 1], [628, 0]])
+            coors = np.array([[0, 0], [3.14, 1], [6.28, 0]])
         else:
-            coors = np.array([[0, 0], [628, 1]])
+            coors = np.array([[0, 0], [6.28, 1]])
 
-        self.coors_to_steps(coors)
-        steps = self.calc_deltasteps(coors)
-        steps_with_delays = self.add_delays(steps)
+        steps = self.coors_to_steps(coors)
+        delta_steps = self.calc_deltasteps(steps)
+        steps_with_delays = self.add_delays(delta_steps)
 
         self.draw_steps_with_delays(steps_with_delays)
 
