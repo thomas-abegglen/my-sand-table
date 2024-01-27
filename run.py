@@ -1,9 +1,8 @@
 import signal, time, os.path
-from Controller import Controller
+from Controller import Controller, FILENAME_PENDING_DRAWING
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_CALIBRATION = "./calibration.json"
-FILENAME_PENDING_DRAWING = "./pending_drawing.json"
 
 controller = Controller()
 def main():

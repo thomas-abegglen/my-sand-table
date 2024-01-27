@@ -4,7 +4,8 @@ import json
 #import utils.GPIOs as GPIOs
 import utils.GPIOs_Mock as GPIOs
 from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
-from run import FILENAME_PENDING_DRAWING
+
+FILENAME_PENDING_DRAWING = "./pending_drawing.json"
 
 class Controller():
 

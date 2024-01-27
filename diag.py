@@ -165,7 +165,12 @@ def printMenu_Controller():
     if os.path.isfile("./calibration.json"):
         controller.read_calibration_file("./calibration.json")
     else:
-        controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=9600)
+        steps = controller.run_M_Rho_Until_Switch(MOTOR_DIR_BACKWARD)
+        print('#steps performed until switch: ', steps)
+        steps = controller.run_M_Rho_Until_Switch(MOTOR_DIR_FORWARD)
+        print('#steps performed until switch: ', steps)
+
+        controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=steps)
         controller.write_calibration_file("./calibration.json")
 
     while(True):
