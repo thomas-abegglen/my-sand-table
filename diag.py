@@ -65,8 +65,8 @@ def moveToCoordinate(controller):
             print("theta:", theta, "rho:", rho)
             newCoordinates = [theta, rho]
             coors = np.array([currentCoordinates, newCoordinates])
-            controller.coors_to_steps(coors)
-            deltaSteps = controller.calc_deltasteps(coors)
+            steps = controller.coors_to_steps(coors)
+            deltaSteps = controller.calc_deltasteps(steps)
             steps_with_delays = controller.add_delays(deltaSteps)
 
             controller.draw_steps_with_delays(steps_with_delays)
