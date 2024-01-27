@@ -7,7 +7,7 @@ FILENAME_CALIBRATION = "./calibration.json"
 controller = Controller()
 def main():
     try:
-        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
 
         print("initializing controller")
 
@@ -29,6 +29,7 @@ def main():
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         if os.path.isfile(FILENAME_PENDING_DRAWING):
             pending_steps_with_delays = controller.read_pending_drawing_file(FILENAME_PENDING_DRAWING)
+            os.remove(FILENAME_PENDING_DRAWING)
             controller.draw_steps_with_delays(pending_steps_with_delays)
             clearTable = False
             running = True
@@ -60,9 +61,15 @@ def main():
             #wait until we have to draw next file
             while running and not controller.NextTableButtonPressed:
                 time.sleep(0.5)
+        
+        #if we are here, we left the endless-loop
+        #shutdown controller
+        controller.shutdown()
+
 
     except KeyboardInterrupt:
         print("terminating the program through KeyboardInterrupt")
+        running = False
         controller.shutdown()
 
 def signal_handler(sig, frame):

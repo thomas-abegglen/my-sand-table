@@ -72,4 +72,7 @@ def cleanup():
     GPIO.output(MOTOR_RHO_RELAY, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_RELAY, GPIO.HIGH)
 
+    #disable Power-Button-LED
+    GPIO.output(SHUTDOWN_LED, GPIO.LOW)
+
     GPIO.cleanup()
