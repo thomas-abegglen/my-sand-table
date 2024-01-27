@@ -43,6 +43,8 @@ def main():
 
             #clear table
             if clearTable:
+                #clearing OUT -> IN, make sure we're at Rho: 1.0
+                controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
                 controller.clear_table(controller.OUT_IN)
 
             #draw next file
