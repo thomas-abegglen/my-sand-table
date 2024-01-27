@@ -3,6 +3,7 @@ from Controller import Controller
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_CALIBRATION = "./calibration.json"
+FILENAME_PENDING_DRAWING = "./pending_drawing.json"
 
 controller = Controller()
 def main():
@@ -16,31 +17,40 @@ def main():
             controller.read_calibration_file(FILENAME_CALIBRATION)
         else:
             #measure number of steps from Rho: 0.0 to Rho: 1.0
+            #first step: move to Rho: 0.0
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
+
+            #second step: measure steps to Rho: 1.0
             nbr_steps = controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
             controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=nbr_steps)
+            
+            #third step: write calibration file
             controller.write_calibration_file(FILENAME_CALIBRATION)
 
-        #so far, we assume: no calibration file exists, so we begin with calibration:
-
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
-        #so far, we assume: no pending drawing, so we start with a clear_table
-        clearTable = True
-        running = True
+        if os.path.isfile(FILENAME_PENDING_DRAWING):
+            pending_steps_with_delays = controller.read_pending_drawing_file(FILENAME_PENDING_DRAWING)
+            controller.draw_steps_with_delays(pending_steps_with_delays)
+            clearTable = False
+            running = True
+        else:
+            clearTable = True
+            running = True
 
         #Playlist exists? Yes: read it, No: --> create it
 
         while running:
             print("running")
 
-            #determine next file to draw
-            thr_file = "test.thr"
-
             #clear table
             if clearTable:
                 controller.clear_table(controller.IN_OUT)
 
             #draw next file
+
+            #determine next file to draw
+            thr_file = "test.thr"
+
             #draw_theta_rho_file(thr_file)
 
             #temp: don't run endlessly:

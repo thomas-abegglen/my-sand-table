@@ -4,6 +4,7 @@ import json
 #import utils.GPIOs as GPIOs
 import utils.GPIOs_Mock as GPIOs
 from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
+from run import FILENAME_PENDING_DRAWING
 
 class Controller():
 
@@ -29,6 +30,8 @@ class Controller():
     M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
     clearTable = False
     running = False
+    pendingShutdown = False
+
     calibration = {
         CALIBRATION_NBR_THETA_STEPS: 200 * 10 * 8,
         CALIBRATION_NBR_RHO_STEPS: 9600
@@ -50,6 +53,10 @@ class Controller():
     def read_calibration_file(self, file_name):
         with open(file_name, "r") as json_file:
             self.calibration = json.load(json_file)
+
+    def read_pending_drawing_file(self, file_name):
+        with open(file_name, "r") as json_file:
+            return json.load(json_file)      
 
     def run_M_Theta(self, steps, delay):
         if steps != 0 and delay >= 0:
@@ -156,15 +163,15 @@ class Controller():
 
         return steps_with_delays
 
-    def draw_theta_rho_file(self, thr_file, instr_nbr = 0):
+    def draw_theta_rho_file(self, thr_file):
         steps = self.get_steps(thr_file)
         steps = self.calc_deltasteps(steps)
         steps_with_delays = self.add_delays(steps)
 
-        self.draw_steps_with_delays(steps_with_delays, instr_nbr)
+        self.draw_steps_with_delays(steps_with_delays)
 
-    def draw_steps_with_delays(self, steps_with_delays, instr_nbr = 0):
-        for i in range(instr_nbr, len(steps_with_delays)):
+    def draw_steps_with_delays(self, steps_with_delays):
+        for i in range(len(steps_with_delays)):
             print("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
             #pass values to M_Theta/M_Rho and create threads
             M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(steps_with_delays[i][0], steps_with_delays[i][2],))
@@ -180,6 +187,12 @@ class Controller():
             M_Theta_Thread.join()
             M_Rho_Thread.join()
 
+            if pendingShutdown:
+                #dump pending steps_with_delays to file
+                with open(FILENAME_PENDING_DRAWING, "w") as json_file:
+                    json.dump(steps_with_delays[i:], json_file)
+
+                return
 
     def stop_motors(self):
         self.M_Theta.running = False
@@ -219,7 +232,12 @@ class Controller():
         print("controller.shutdown")
         global running
         running = False
+
+        global pendingShutdown
+        pendingShutdown = True
+        
         print("stopping motors...")
         self.stop_motors()
+
         print("cleanup GPIOs")
         GPIOs.cleanup()
