@@ -3,7 +3,6 @@ import utils.GPIOs_Mock as GPIOs
 import numpy as np
 from Controller import Controller
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
-from utils.coord_functions import coors_to_steps, calc_deltasteps
 from time import sleep
 import os
 import signal
@@ -66,15 +65,16 @@ def moveToCoordinate(controller):
             print("theta:", theta, "rho:", rho)
             newCoordinates = [theta, rho]
             coors = np.array([currentCoordinates, newCoordinates])
-            coors_to_steps(coors)
-            deltaSteps = calc_deltasteps(coors)
+            controller.coors_to_steps(coors)
+            deltaSteps = controller.calc_deltasteps(coors)
             steps_with_delays = controller.add_delays(deltaSteps)
 
             controller.draw_steps_with_delays(steps_with_delays)
 
             currentCoordinates = newCoordinates
         except Exception as e:
-            print("invalid coordinates, exiting")
+            print("invalid coordinates, exiting", e)
+            input()
             return
 
 
@@ -161,6 +161,13 @@ def printMenu_RhoMotor():
             
 def printMenu_Controller():
     controller = Controller()
+
+    if os.path.isfile("./calibration.json"):
+        controller.read_calibration_file("./calibration.json")
+    else:
+        controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=9600)
+        controller.write_calibration_file("./calibration.json")
+
     while(True):
         os.system('clear')
         print("Menu\r\n1) Move Rho OUT until switch\r\n2) Move Rho IN until switch\r\n3) Move to Coord\r\n0) Exit")

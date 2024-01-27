@@ -1,19 +1,22 @@
 import glob, os, math, random, time, threading
 import numpy as np
+import json
 #import utils.GPIOs as GPIOs
 import utils.GPIOs_Mock as GPIOs
 from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
-from utils.coord_functions import get_steps, calc_deltasteps, coors_to_steps
 
 class Controller():
 
-    DEFAULT_SPEED = 800
-    MAX_SPEED = 2000
+    DEFAULT_SPEED = 800 #nbr of steps per second
+    MAX_SPEED = 2000 #nbr of steps per second
 
-    IN_OUT = "in_out",
-    OUT_IN = "out_in",
-    OUT_OUT = "out_out",
+    IN_OUT = "in_out"
+    OUT_IN = "out_in"
+    OUT_OUT = "out_out"
     IN_IN = "in_in"
+
+    CALIBRATION_NBR_THETA_STEPS = "nbr_theta_steps"
+    CALIBRATION_NBR_RHO_STEPS = "nbr_rho_steps"
 
     Clear_Modes = [
         IN_OUT,
@@ -26,12 +29,27 @@ class Controller():
     M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
     clearTable = False
     running = False
+    calibration = {
+        CALIBRATION_NBR_THETA_STEPS: 200 * 10 * 8,
+        CALIBRATION_NBR_RHO_STEPS: 9600
+    }
 
     def __init__(self):
         print("initializing...")
         
         GPIOs.init()
 
+    def calibrate(self, nbr_theta_steps, nbr_rho_steps):
+        self.calibration[self.CALIBRATION_NBR_THETA_STEPS] = nbr_theta_steps
+        self.calibration[self.CALIBRATION_NBR_RHO_STEPS] = nbr_rho_steps
+
+    def write_calibration_file(self, file_name):
+        with open(file_name, "w") as json_file:
+            json.dump(self.calibration, json_file)
+
+    def read_calibration_file(self, file_name):
+        with open(file_name, "r") as json_file:
+            self.calibration = json.load(json_file)
 
     def run_M_Theta(self, steps, delay):
         if steps != 0 and delay >= 0:
@@ -65,22 +83,68 @@ class Controller():
         else:
             print("Unknown direction: ", dir)
 
+    def get_steps(self, thr_file):
+        with open(thr_file, 'r') as f:
+            content = f.readlines()
+            
+        lines = [line.rstrip('\n') for line in content]
+        #print("lines 1:", lines[:29])
+
+        steps = np.array([0, 0])
+        #print("steps 1:", steps)
+        for c in lines:
+            theta = float(c[:c.find(" ")])
+            rho = float(c[c.find(" ")+1:])
+
+            print("theta:", theta, "rho:", rho)
+
+            #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
+            theta = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * theta / (2 * math.pi))
+            rho = int(self.calibration[self.CALIBRATION_NBR_RHO_STEPS] * rho)
+
+            steps = np.vstack((steps, [theta, rho]))
+
+        #print("steps 2:", steps)
+        min_value = steps[1:, 0].min() #suche den kleinsten Wert aus den theta-Werten
+        #print("min_value:", min_value)
+
+        steps[1:, 0] -= min_value
+        #print("steps 3:", steps)
+        return steps
+
+    def calc_deltasteps(self, deltasteps):
+        #print("steps[1:]", steps[1:]) #alles aus steps ohne die erste Zeile
+        #print("steps[:-1]", steps[:-1]) #alles aus steps ohne die letzte Zeile
+        print ("calc_deltasteps(", deltasteps, ")")
+        return deltasteps[1:] - deltasteps[:-1]
+
+    def coors_to_steps(self, coors):
+        print("coors_to_steps(", coors, ")")
+
+        steps = np.copy(coors)
+        for step in steps:
+            #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
+            step[0] = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * step[0] / (2 * math.pi))
+            step[1] = int(self.calibration[self.CALIBRATION_NBR_RHO_STEPS] * step[1])
+
+        return steps
+
     def add_delays(self, steps):
         delays = np.array([0, 0])
         for s in steps:
             print("step:", s)
             elapsed_time = abs(s[0]) / self.DEFAULT_SPEED #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
             print("elapsed_time:", elapsed_time)
-            if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_>
-                print("Rotor mit DEFAULT_SPEED")
+            if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
+                print("Theta mit DEFAULT_SPEED")
                 Theta_delay = 1 / self.DEFAULT_SPEED #delay für Theta mit DEFAULT_SPEED berechnen
-                Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Linear berechnen (sollte zwischen DEFAULT_SPEED und>
-                print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
+                Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Rho berechnen (sollte zwischen DEFAULT_SPEED und MAX_SPEED liegen)
+                print("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
             else:
-                #entweder ist die theta-Verschiebung 0 oder es müsste für Linear schneller gehen als mit MAX_SPEED
-                print("Linear mit MAX_SPEED")
+                #entweder ist die theta-Verschiebung 0 oder es müsste für Rho schneller gehen als mit MAX_SPEED
+                print("Rho mit MAX_SPEED")
                 min_time = abs(s[1]) / self.MAX_SPEED #wie lange dauert rho-Verschiebung mit MAX_SPEED?
-                Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED li>
+                Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED liegen)
                 Rho_delay = 1 / self.MAX_SPEED #delay für Linear mit MAX_SPEED berechnen
                 print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
     
@@ -93,8 +157,8 @@ class Controller():
         return steps_with_delays
 
     def draw_theta_rho_file(self, thr_file, instr_nbr = 0):
-        steps = get_steps(thr_file)
-        steps = calc_deltasteps(steps)
+        steps = self.get_steps(thr_file)
+        steps = self.calc_deltasteps(steps)
         steps_with_delays = self.add_delays(steps)
 
         self.draw_steps_with_delays(steps_with_delays, instr_nbr)
@@ -138,8 +202,8 @@ class Controller():
         else:
             coors = np.array([[0, 0], [628, 1]])
 
-        coors_to_steps(coors)
-        steps = calc_deltasteps(coors)
+        self.coors_to_steps(coors)
+        steps = self.calc_deltasteps(coors)
         steps_with_delays = self.add_delays(steps)
 
         self.draw_steps_with_delays(steps_with_delays)

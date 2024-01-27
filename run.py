@@ -1,8 +1,8 @@
-import signal, time
+import signal, time, os.path
 from Controller import Controller
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
-
+FILENAME_CALIBRATION = "./calibration.json"
 
 controller = Controller()
 def main():
@@ -12,8 +12,16 @@ def main():
         print("initializing controller")
 
         #Calibration-file exists? Yes: read it, No: --> calibrate
+        if os.path.isfile(FILENAME_CALIBRATION):
+            controller.read_calibration_file(FILENAME_CALIBRATION)
+        else:
+            #measure number of steps from Rho: 0.0 to Rho: 1.0
+            controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
+            nbr_steps = controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
+            controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=nbr_steps)
+            controller.write_calibration_file(FILENAME_CALIBRATION)
+
         #so far, we assume: no calibration file exists, so we begin with calibration:
-        controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         #so far, we assume: no pending drawing, so we start with a clear_table

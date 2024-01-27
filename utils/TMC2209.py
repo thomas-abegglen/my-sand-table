@@ -83,7 +83,7 @@ class TMC2209():
         else:
             # print("the dir must be : 'forward' or 'backward'")
             self.digital_write(self.enable_pin, 1)
-            return
+            return -1
 
         # print("turn step: ",steps)
         pos = 0
