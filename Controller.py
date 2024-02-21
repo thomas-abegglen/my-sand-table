@@ -7,31 +7,25 @@ from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_PENDING_DRAWING = "./pending_drawing.json"
 
+CLEAR_MODE_IN_OUT = "in_out"
+CLEAR_MODE_OUT_IN = "out_in"
+CLEAR_MODE_OUT_OUT = "out_out"
+CLEAR_MODE_IN_IN = "in_in"
+
 class Controller():
 
     DEFAULT_SPEED = 800 #nbr of steps per second
-    MAX_SPEED = 2000 #nbr of steps per second
-
-    IN_OUT = "in_out"
-    OUT_IN = "out_in"
-    OUT_OUT = "out_out"
-    IN_IN = "in_in"
+    MAX_SPEED = 1000 #nbr of steps per second
 
     CALIBRATION_NBR_THETA_STEPS = "nbr_theta_steps"
     CALIBRATION_NBR_RHO_STEPS = "nbr_rho_steps"
-
-    Clear_Modes = [
-        IN_OUT,
-        OUT_IN,
-        OUT_OUT,
-        IN_IN
-    ]
 
     M_Theta = TMC2209(dir_pin=GPIOs.MOTOR_THETA_DIR, step_pin=GPIOs.MOTOR_THETA_STEP, enable_pin=GPIOs.MOTOR_THETA_ENABLE, limit_switches=None)
     M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
     clearTable = False
     running = False
     pendingShutdown = False
+    current_rho_step_position = 0
 
     calibration = {
         CALIBRATION_NBR_THETA_STEPS: 200 * 10 * 8,
@@ -80,21 +74,30 @@ class Controller():
 
         self.M_Rho.stop()
         self.M_Rho.running = False
+        self.current_rho_step_position += steps
 
         # print("M_Rho done!")
     
     def run_M_Rho_Until_Switch(self, dir):
         if(dir == MOTOR_DIR_FORWARD):
-            return self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_OUT, stepdelay=0.0005)
+            steps = self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_OUT, stepdelay=0.0005)
+            self.current_rho_step_position = steps
+            return steps
+        
         elif(dir == MOTOR_DIR_BACKWARD):
-            return self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_IN, stepdelay=0.0005)
+            steps = self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_IN, stepdelay=0.0005)
+            self.current_rho_step_position = 0
+            return steps
         else:
             print("Unknown direction: ", dir)
 
-    def get_steps(self, thr_file):
+    def get_steps(self, thr_file, reverse_file=False):
         with open(thr_file, 'r') as f:
             content = f.readlines()
             
+        if reverse_file:
+            content.reverse()
+
         lines = [line.rstrip('\n') for line in content]
         #print("lines 1:", lines[:29])
 
@@ -164,8 +167,8 @@ class Controller():
 
         return steps_with_delays
 
-    def draw_theta_rho_file(self, thr_file):
-        steps = self.get_steps(thr_file)
+    def draw_theta_rho_file(self, thr_file, reverse_file=False):
+        steps = self.get_steps(thr_file, reverse_file)
         steps = self.calc_deltasteps(steps)
         steps_with_delays = self.add_delays(steps)
 
@@ -195,6 +198,13 @@ class Controller():
 
                 return
 
+    def get_current_rho_position(self):
+        print("current_rho_position:", self.current_rho_step_position)
+        if self.current_rho_step_position < 100:
+            return 0
+        else:
+            return self.current_rho_step_position
+
     def stop_motors(self):
         self.M_Theta.running = False
         self.M_Rho.running = False
@@ -205,13 +215,13 @@ class Controller():
     def clear_table(self, clear_mode):
         print("Clearing table")
 
-        if clear_mode == self.IN_OUT:
+        if clear_mode == CLEAR_MODE_IN_OUT:
             coors = np.array([[0, 0], [6.28, 1]])
-        elif clear_mode == self.OUT_IN:
+        elif clear_mode == CLEAR_MODE_OUT_IN:
             coors = np.array([[0, 1], [6.28, 0]])
-        elif clear_mode == self.OUT_OUT:
+        elif clear_mode == CLEAR_MODE_OUT_OUT:
             coors = np.array([[0, 1], [3.14, 0], [6.28, 1]])
-        elif clear_mode == self.IN_IN:
+        elif clear_mode == CLEAR_MODE_IN_IN:
             coors = np.array([[0, 0], [3.14, 1], [6.28, 0]])
         else:
             coors = np.array([[0, 0], [6.28, 1]])

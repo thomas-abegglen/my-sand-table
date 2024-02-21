@@ -1,0 +1,2 @@
+spiral_inside_out.thr
+spiral_outside_in.thr

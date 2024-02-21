@@ -1,10 +1,12 @@
 import signal, time, os.path
 from Controller import Controller, FILENAME_PENDING_DRAWING
+from Playlist import Playlist
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_CALIBRATION = "./calibration.json"
 
 controller = Controller()
+playlist = Playlist()
 def main():
     try:
         signal.signal(signal.SIGTERM, signal_handler)
@@ -37,23 +39,19 @@ def main():
             clearTable = True
             running = True
 
-        #Playlist exists? Yes: read it, No: --> create it
+            #to start, make sure we're at Rho: 0.0
+            controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         while running:
             print("running")
 
             #clear table
             if clearTable:
-                #clearing OUT -> IN, make sure we're at Rho: 1.0
-                controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
-                controller.clear_table(controller.OUT_IN)
+                clear_mode = playlist.get_clear_mode(controller.get_current_rho_position())
+                controller.clear_table(clear_mode=clear_mode[0])
+                reverseNextFile = clear_mode[1]
 
-            #draw next file
-
-            #determine next file to draw
-            thr_file = "test.thr"
-
-            controller.draw_theta_rho_file(thr_file)
+            controller.draw_theta_rho_file(playlist.get_current_file, reverseNextFile)
 
             #temp: don't run endlessly:
             running = False
@@ -61,6 +59,8 @@ def main():
             #wait until we have to draw next file
             while running and not controller.NextTableButtonPressed:
                 time.sleep(0.5)
+
+            playlist.move_to_next_file()    
         
         #if we are here, we left the endless-loop
         #shutdown controller
@@ -71,6 +71,8 @@ def main():
         print("terminating the program through KeyboardInterrupt")
         running = False
         controller.shutdown()
+
+
 
 def signal_handler(sig, frame):
     print("terminating the program through SIGINT")

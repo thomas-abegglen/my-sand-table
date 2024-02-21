@@ -2,6 +2,7 @@
 import utils.GPIOs_Mock as GPIOs
 import numpy as np
 from Controller import Controller
+from Playlist import Playlist
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 from time import sleep
 import os
@@ -191,11 +192,38 @@ def printMenu_Controller():
         else:
             return
 
+def printMenu_Playlist():
+    playlist = Playlist()
+
+    current_rho_position = 0
+    while(True):
+        os.system('clear')
+        print("Menu\r\n1) Print playlist state\r\n2) Move to next file\r\n3) Calc clear_mode and reversal_mode for next table\r\n0) Exit")
+        menuChoice = input()
+
+        if menuChoice == "1":
+            print("current_rho_position:", current_rho_position)
+            playlist.print()
+            input()
+        elif menuChoice == "2":
+            current_rho_position = playlist.get_current_end_rho()
+            playlist.move_to_next_file()
+            input()
+        elif menuChoice == "3":
+            print("current_rho_position:", current_rho_position)
+            print("next table to draw:", playlist.get_current_file())
+            print("start_rho_position:", playlist.get_current_start_rho(), "end_rho_position:", playlist.get_current_end_rho())
+            clear_mode = playlist.get_clear_mode(current_rho=current_rho_position)
+            print("clear_mode:", clear_mode[0], "reverse_table:", clear_mode[1])
+            input()
+        else:
+            return
+
 
 def printMenu_Level0():
     while(True):
         os.system('clear')
-        print("Menu\r\n1) Theta Motor\r\n2) Rho Motor\r\n3) Controller\r\n0) Exit")
+        print("Menu\r\n1) Theta Motor\r\n2) Rho Motor\r\n3) Controller\r\n4) Playlist\r\n0) Exit")
         menuChoice = input()
 
         if menuChoice == "1":
@@ -204,6 +232,8 @@ def printMenu_Level0():
             printMenu_RhoMotor()
         elif menuChoice == "3":
             printMenu_Controller()
+        elif menuChoice == "4":
+            printMenu_Playlist()
         else:
             return
     
