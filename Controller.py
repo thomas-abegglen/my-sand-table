@@ -235,9 +235,7 @@ class Controller():
         print("finished clearing table")
 
     def NextTableButtonPressed(self):
-        #Auto-Play is currently disabled
-        #return GPIOs.input(GPIOs.NEXTTABLE_BUTTON)
-        return False
+        return GPIOs.input(GPIOs.NEXTTABLE_BUTTON)
 
     def shutdown(self):
         print("controller.shutdown")

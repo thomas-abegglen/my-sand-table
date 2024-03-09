@@ -17,7 +17,6 @@ MOTOR_RHO_RELAY = 24
 SWITCH_OUT = 5
 SWITCH_IN = 6
 
-NEXTTABLE_LED = 19
 NEXTTABLE_BUTTON = 26
 
 def init():
@@ -42,7 +41,6 @@ def init():
     GPIO.setup(SWITCH_OUT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(SWITCH_IN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    GPIO.setup(NEXTTABLE_LED, GPIO.OUT)
     GPIO.setup(NEXTTABLE_BUTTON, GPIO.IN)
 
     #enable Power-Button-LED

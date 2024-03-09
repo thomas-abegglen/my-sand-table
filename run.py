@@ -43,7 +43,7 @@ def main():
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         while running:
-            print("running")
+            print("running, clearTable:", clearTable)
 
             #clear table
             if clearTable:
@@ -51,15 +51,21 @@ def main():
                 controller.clear_table(clear_mode=clear_mode[0])
                 reverseNextFile = clear_mode[1]
 
+            print("drawing: ", playlist.get_current_file, "reverseNextFile: ", reverseNextFile)
             controller.draw_theta_rho_file(playlist.get_current_file, reverseNextFile)
 
-            #temp: don't run endlessly:
-            running = False
+            #once we have drawn a table, we will clear before drawing the next table
+            clearTable = True
+
+            print("checking if we should continue drawing:")
+            print("running:", running, "NextTableButtonPressed:", controller.NextTableButtonPressed())
 
             #wait until we have to draw next file
-            while running and not controller.NextTableButtonPressed:
+            while running and not controller.NextTableButtonPressed():
+                print("NextTableButtonPressed is false, sleeping...")                
                 time.sleep(0.5)
 
+            print("drawing next table")
             playlist.move_to_next_file()    
         
         #if we are here, we left the endless-loop
