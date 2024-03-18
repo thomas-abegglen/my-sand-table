@@ -33,8 +33,7 @@ class Controller():
     }
 
     def __init__(self):
-        print("initializing...")
-        
+        print("initializing controller...")
         GPIOs.init()
 
     def calibrate(self, nbr_theta_steps, nbr_rho_steps):
@@ -103,11 +102,11 @@ class Controller():
 
         steps = np.array([0, 0])
         #print("steps 1:", steps)
+
         for c in lines:
             theta = float(c[:c.find(" ")])
             rho = float(c[c.find(" ")+1:])
-
-            print("theta:", theta, "rho:", rho)
+            #print("theta:", theta, "rho:", rho)
 
             #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
             theta = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * theta / (2 * math.pi))
@@ -126,11 +125,11 @@ class Controller():
     def calc_deltasteps(self, deltasteps):
         #print("steps[1:]", steps[1:]) #alles aus steps ohne die erste Zeile
         #print("steps[:-1]", steps[:-1]) #alles aus steps ohne die letzte Zeile
-        print ("calc_deltasteps(", deltasteps, ")")
+        #print ("calc_deltasteps(", deltasteps, ")")
         return deltasteps[1:] - deltasteps[:-1]
 
     def coors_to_steps(self, coors):
-        print("coors_to_steps(", coors, ")")
+        #print("coors_to_steps(", coors, ")")
 
         steps = np.copy(coors)
         for step in steps:
@@ -143,25 +142,25 @@ class Controller():
     def add_delays(self, steps):
         delays = np.array([0, 0])
         for s in steps:
-            print("step:", s)
+            #print("step:", s)
             elapsed_time = abs(s[0]) / self.DEFAULT_SPEED #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
-            print("elapsed_time:", elapsed_time)
+            #print("elapsed_time:", elapsed_time)
             if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
-                print("Theta mit DEFAULT_SPEED")
+                #print("Theta mit DEFAULT_SPEED")
                 Theta_delay = 1 / self.DEFAULT_SPEED #delay für Theta mit DEFAULT_SPEED berechnen
                 Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Rho berechnen (sollte zwischen DEFAULT_SPEED und MAX_SPEED liegen)
-                print("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
+                #print("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
             else:
                 #entweder ist die theta-Verschiebung 0 oder es müsste für Rho schneller gehen als mit MAX_SPEED
-                print("Rho mit MAX_SPEED")
+                #print("Rho mit MAX_SPEED")
                 min_time = abs(s[1]) / self.MAX_SPEED #wie lange dauert rho-Verschiebung mit MAX_SPEED?
                 Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED liegen)
                 Rho_delay = 1 / self.MAX_SPEED #delay für Linear mit MAX_SPEED berechnen
-                print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
+                #print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
     
             delays = np.vstack((delays, [Theta_delay, Rho_delay]))
 
-        print("delays:", delays)
+        #print("delays:", delays)
         delays = delays[1:]
         steps_with_delays = np.concatenate((steps, delays), axis=1)
 
@@ -176,7 +175,8 @@ class Controller():
 
     def draw_steps_with_delays(self, steps_with_delays):
         for i in range(len(steps_with_delays)):
-            print("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
+            #print("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
+            
             #pass values to M_Theta/M_Rho and create threads
             M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(steps_with_delays[i][0], steps_with_delays[i][2],))
             M_Rho_Thread = threading.Thread(target=self.run_M_Rho, args=(steps_with_delays[i][1], steps_with_delays[i][3],))
@@ -192,14 +192,16 @@ class Controller():
             M_Rho_Thread.join()
 
             if self.pendingShutdown:
+                print("shutdown detected, writing pending steps to file for later drawing...")
                 #dump pending steps_with_delays to file
                 with open(FILENAME_PENDING_DRAWING, "w") as json_file:
                     json.dump(steps_with_delays[i:], json_file)
 
+                print("file with pending steps dumped")
                 return
 
     def get_current_rho_position(self):
-        print("current_rho_position:", self.current_rho_step_position)
+        #print("current_rho_position:", self.current_rho_step_position)
         if self.current_rho_step_position < 100:
             return 0
         else:
@@ -216,14 +218,19 @@ class Controller():
         print("Clearing table")
 
         if clear_mode == CLEAR_MODE_IN_OUT:
+            print("CLEAR_MODE_IN_OUT")
             coors = np.array([[0, 0], [6.28, 1]])
         elif clear_mode == CLEAR_MODE_OUT_IN:
+            print("CLEAR_MODE_OUT_IN")
             coors = np.array([[0, 1], [6.28, 0]])
         elif clear_mode == CLEAR_MODE_OUT_OUT:
+            print("CLEAR_MODE_OUT_OUT")
             coors = np.array([[0, 1], [3.14, 0], [6.28, 1]])
         elif clear_mode == CLEAR_MODE_IN_IN:
+            print("CLEAR_MODE_IN_IN")
             coors = np.array([[0, 0], [3.14, 1], [6.28, 0]])
         else:
+            print("default: CLEAR_MODE_IN_OUT")
             coors = np.array([[0, 0], [6.28, 1]])
 
         steps = self.coors_to_steps(coors)

@@ -41,7 +41,7 @@ def init():
     GPIO.setup(SWITCH_OUT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(SWITCH_IN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    GPIO.setup(NEXTTABLE_BUTTON, GPIO.IN)
+    GPIO.setup(NEXTTABLE_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     #enable Power-Button-LED
     GPIO.output(SHUTDOWN_LED, GPIO.HIGH)
@@ -54,6 +54,9 @@ def init():
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
 
+    print("GPIOs initialization finished.")
+
+
 
 def input(pin):
     return GPIO.input(pin)
@@ -62,6 +65,8 @@ def output(pin, value):
     GPIO.output(pin, value)
 
 def cleanup():
+    print("cleaning up GPIOs...")
+
     #disable Motors
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
@@ -74,3 +79,5 @@ def cleanup():
     GPIO.output(SHUTDOWN_LED, GPIO.LOW)
 
     GPIO.cleanup()
+
+    print("GPIOs cleanup finished.")

@@ -19,7 +19,17 @@ NEXTTABLE_BUTTON = 26
 NbrOfCallsUntilMockValue = {
     SWITCH_IN: [0, 50, True, False],
     SWITCH_OUT: [0, 50, True, False],
-    NEXTTABLE_BUTTON: [0, 2, False, True]
+    NEXTTABLE_BUTTON: [0, 2, False, True],
+
+    MOTOR_THETA_ENABLE: [0, 1, True, True],
+    MOTOR_THETA_DIR: [0, 1, True, True],
+    MOTOR_THETA_STEP: [0, 1, True, True],
+    MOTOR_THETA_RELAY: [0, 1, True, True],
+    MOTOR_RHO_ENABLE: [0, 1, True, True],
+    MOTOR_RHO_DIR: [0, 1, True, True],
+    MOTOR_RHO_STEP: [0, 1, True, True],
+    MOTOR_RHO_RELAY: [0, 1, True, True],
+
 }
 
 
@@ -27,7 +37,7 @@ def init():
     print("initializing GPIOs...")
 
 def input(pin):
-    print("GPIOs.input pin:", pin)
+    #print("GPIOs.input pin:", pin)
 
     #lookup pin in Dictionary for the mock-values
     mockData = NbrOfCallsUntilMockValue[pin]
