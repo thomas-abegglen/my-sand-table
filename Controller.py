@@ -104,6 +104,9 @@ class Controller():
         #print("steps 1:", steps)
 
         for c in lines:
+            if c.startswith("//"):
+                continue
+
             theta = float(c[:c.find(" ")])
             rho = float(c[c.find(" ")+1:])
             #print("theta:", theta, "rho:", rho)

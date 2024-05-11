@@ -90,14 +90,25 @@ class Playlist():
     def get_current_end_rho(self):
         with open(self.thr_files[self.current_file_index]) as file:
             lines = file.readlines()
-            lastLine = lines[-1]
+
+            #loop until last line without "//" at the beginning
+            lineIndex = -1
+            lastLine = lines[lineIndex].rstrip('\n')
+            while lastLine.startswith("//"):
+                lineIndex -= 1
+                lastLine = lines[lineIndex].rstrip('\n')
 
             return self.get_rho_from_line(lastLine)
 
     def get_current_start_rho(self):
         with open(self.thr_files[self.current_file_index]) as file:
             lines = file.readlines()
-            firstLine = lines[0].rstrip('\n')
+            #loop until first line without "//" at the beginning
+            lineIndex = 0
+            firstLine = lines[lineIndex].rstrip('\n')
+            while firstLine.startswith("//"):
+                lineIndex += 1
+                firstLine = lines[lineIndex].rstrip('\n')
             
             return self.get_rho_from_line(firstLine)
 
