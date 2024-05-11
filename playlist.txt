@@ -1,2 +1,6 @@
-spiral_inside_out.thr
-spiral_outside_in.thr
+./THR/sharpSawtooth.thr
+./THR/dougsSpiralTriangle2.thr
+./THR/Dougs OctaSwitcher.thr
+./THR/hexagoner.thr
+./THR/sunburst.thr
+./THR/dougs3.thr

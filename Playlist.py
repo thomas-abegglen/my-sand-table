@@ -2,6 +2,7 @@ import os
 from Controller import CLEAR_MODE_IN_IN, CLEAR_MODE_IN_OUT, CLEAR_MODE_OUT_IN, CLEAR_MODE_OUT_OUT
 
 FILENAME_PLAYLIST = "./playlist.txt"
+DIR_THR_FILES = "./THR/"
 
 class Playlist():
 
@@ -26,9 +27,9 @@ class Playlist():
                 self.thr_files.append(line)
 
     def append_new_files(self):
-        for file in os.listdir("."):
-            if file.endswith(".thr") and file not in self.thr_files:
-                self.thr_files.append(file)
+        for file in os.listdir(DIR_THR_FILES):
+            if file.endswith(".thr") and (DIR_THR_FILES+file) not in self.thr_files:
+                self.thr_files.append(DIR_THR_FILES+file)
 
     def write_playlist_file(self, file_name):
         print("write_playlist_file")
