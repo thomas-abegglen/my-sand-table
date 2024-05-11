@@ -55,7 +55,8 @@ def main():
 
         while running:
             print("running, clearTable:", clearTable)
-
+            reverseNextFile = False
+            
             #clear table
             if clearTable:
                 clear_mode = playlist.get_clear_mode(controller.get_current_rho_position())
