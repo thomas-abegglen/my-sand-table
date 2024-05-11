@@ -3,7 +3,7 @@ from Controller import Controller, FILENAME_PENDING_DRAWING
 from Playlist import Playlist
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
-FILENAME_CALIBRATION = "./calibration.json"
+FILENAME_CALIBRATION = "/home/sisyphus/my-sand-table/calibration.json"
 
 controller = Controller()
 playlist = Playlist()
@@ -26,6 +26,10 @@ def main():
 
             #second step: measure steps to Rho: 1.0
             nbr_steps = controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
+
+            #safety margin: 40 steps
+            nbr_steps -= 40
+
             controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=nbr_steps)
             
             #third step: write calibration file

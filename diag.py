@@ -165,16 +165,19 @@ def printMenu_RhoMotor():
 def printMenu_Controller():
     controller = Controller()
 
-    if os.path.isfile("./calibration.json"):
-        controller.read_calibration_file("./calibration.json")
+    if os.path.isfile("/home/sisyphus/my-sand-table/calibration.json"):
+        controller.read_calibration_file("/home/sisyphus/my-sand-table/calibration.json")
     else:
         steps = controller.run_M_Rho_Until_Switch(MOTOR_DIR_BACKWARD)
         print('#steps performed until switch: ', steps)
         steps = controller.run_M_Rho_Until_Switch(MOTOR_DIR_FORWARD)
         print('#steps performed until switch: ', steps)
 
+        #safety margin: 40 steps
+        steps -= 40
+
         controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=steps)
-        controller.write_calibration_file("./calibration.json")
+        controller.write_calibration_file("/home/sisyphus/my-sand-table/calibration.json")
 
     while(True):
         os.system('clear')

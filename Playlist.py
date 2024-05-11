@@ -1,8 +1,8 @@
 import os
 from Controller import CLEAR_MODE_IN_IN, CLEAR_MODE_IN_OUT, CLEAR_MODE_OUT_IN, CLEAR_MODE_OUT_OUT
 
-FILENAME_PLAYLIST = "./playlist.txt"
-DIR_THR_FILES = "./THR/"
+FILENAME_PLAYLIST = "/home/sisyphus/my-sand-table/playlist.txt"
+DIR_THR_FILES = "/home/sisyphus/my-sand-table/THR/"
 
 class Playlist():
 
