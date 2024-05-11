@@ -3,7 +3,7 @@ from Controller import Controller, FILENAME_PENDING_DRAWING
 from Playlist import Playlist
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
-FILENAME_CALIBRATION = "/home/sisyphus/my-sand-table/calibration.json"
+FILENAME_CALIBRATION = "/home/sisyphus/Projects/my-sand-table/calibration.json"
 
 controller = Controller()
 playlist = Playlist()
