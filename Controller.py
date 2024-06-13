@@ -222,19 +222,19 @@ class Controller():
 
         if clear_mode == CLEAR_MODE_IN_OUT:
             print("CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, 0], [6.28, 1]])
+            coors = np.array([[0, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_OUT_IN:
             print("CLEAR_MODE_OUT_IN")
-            coors = np.array([[0, 1], [6.28, 0]])
+            coors = np.array([[0, 1], [314, 0]])
         elif clear_mode == CLEAR_MODE_OUT_OUT:
             print("CLEAR_MODE_OUT_OUT")
-            coors = np.array([[0, 1], [3.14, 0], [6.28, 1]])
+            coors = np.array([[0, 1], [157, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_IN_IN:
             print("CLEAR_MODE_IN_IN")
-            coors = np.array([[0, 0], [3.14, 1], [6.28, 0]])
+            coors = np.array([[0, 0], [157, 1], [314, 0]])
         else:
             print("default: CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, 0], [6.28, 1]])
+            coors = np.array([[0, 0], [314, 1]])
 
         steps = self.coors_to_steps(coors)
         delta_steps = self.calc_deltasteps(steps)
