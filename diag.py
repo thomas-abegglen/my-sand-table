@@ -174,7 +174,7 @@ def printMenu_Controller():
         print('#steps performed until switch: ', steps)
 
         #safety margin: 40 steps
-        steps -= 40
+        #steps -= 40
 
         controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=steps)
         controller.write_calibration_file("/home/sisyphus/Projects/my-sand-table/calibration.json")

@@ -29,7 +29,7 @@ class Controller():
 
     calibration = {
         CALIBRATION_NBR_THETA_STEPS: 200 * 10 * 8,
-        CALIBRATION_NBR_RHO_STEPS: 9600
+        CALIBRATION_NBR_RHO_STEPS: 8285
     }
 
     def __init__(self):
