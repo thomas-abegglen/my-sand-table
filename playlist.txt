@@ -1,4 +1,5 @@
 /home/sisyphus/Projects/my-sand-table/THR/sharpSawtooth.thr
+/home/sisyphus/Projects/my-sand-table/THR/Reverse-HEP.thr
 /home/sisyphus/Projects/my-sand-table/THR/dougsSpiralTriangle2.thr
 /home/sisyphus/Projects/my-sand-table/THR/Dougs OctaSwitcher.thr
 /home/sisyphus/Projects/my-sand-table/THR/hexagoner.thr
