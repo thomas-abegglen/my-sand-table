@@ -7,6 +7,8 @@ FILENAME_CALIBRATION = "/home/sisyphus/Projects/my-sand-table/calibration.json"
 
 controller = Controller()
 playlist = Playlist()
+
+running = True
 def main():
     try:
         signal.signal(signal.SIGTERM, signal_handler)
@@ -45,9 +47,11 @@ def main():
             controller.draw_steps_with_delays(pending_steps_with_delays)
             print("finished drawing pending steps")
             clearTable = False
+            global running
             running = True
         else:
             clearTable = True
+            global running
             running = True
 
             #to start, make sure we're at Rho: 0.0
@@ -87,6 +91,7 @@ def main():
 
     except KeyboardInterrupt:
         print("terminating the program through KeyboardInterrupt")
+        global running
         running = False
         controller.shutdown()
 
@@ -94,6 +99,7 @@ def main():
 
 def signal_handler(sig, frame):
     print("terminating the program through SIGINT")
+    global running
     running = False
     controller.shutdown()
 

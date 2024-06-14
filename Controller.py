@@ -249,11 +249,9 @@ class Controller():
 
     def shutdown(self):
         print("controller.shutdown")
-        global running
-        running = False
+        self.running = False
 
-        global pendingShutdown
-        pendingShutdown = True
+        self.pendingShutdown = True
         
         print("stopping motors...")
         self.stop_motors()
