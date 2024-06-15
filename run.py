@@ -5,10 +5,10 @@ from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_CALIBRATION = "/home/sisyphus/Projects/my-sand-table/calibration.json"
 
+running = True
 controller = Controller()
 playlist = Playlist()
 
-running = True
 def main():
     try:
         signal.signal(signal.SIGTERM, signal_handler)
@@ -38,6 +38,9 @@ def main():
             controller.write_calibration_file(FILENAME_CALIBRATION)
             print("calibration finished")
 
+        global running
+        running = True
+
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         if os.path.isfile(FILENAME_PENDING_DRAWING):
             print("pending drawing detected. reading pending steps from file...")
@@ -47,12 +50,8 @@ def main():
             controller.draw_steps_with_delays(pending_steps_with_delays)
             print("finished drawing pending steps")
             clearTable = False
-            global running
-            running = True
         else:
             clearTable = True
-            global running
-            running = True
 
             #to start, make sure we're at Rho: 0.0
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
@@ -91,7 +90,6 @@ def main():
 
     except KeyboardInterrupt:
         print("terminating the program through KeyboardInterrupt")
-        global running
         running = False
         controller.shutdown()
 
