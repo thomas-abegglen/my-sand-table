@@ -197,7 +197,7 @@ class Controller():
                 print("shutdown detected, writing pending steps to file for later drawing...")
                 #dump pending steps_with_delays to file
                 with open(FILENAME_PENDING_DRAWING, "w") as json_file:
-                    json.dump(steps_with_delays[i:], json_file)
+                    json.dump(steps_with_delays[i:].to_list(), json_file, indent=6)
 
                 print("file with pending steps dumped")
                 return
@@ -255,4 +255,4 @@ class Controller():
         self.stop_motors()
 
         print("cleanup GPIOs")
-        GPIOs.cleanup()
+        #GPIOs.cleanup()

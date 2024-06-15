@@ -44,10 +44,10 @@ def main():
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         if os.path.isfile(FILENAME_PENDING_DRAWING):
             print("pending drawing detected. reading pending steps from file...")
-            pending_steps_with_delays = controller.read_pending_drawing_file(FILENAME_PENDING_DRAWING)
+#            pending_steps_with_delays = controller.read_pending_drawing_file(FILENAME_PENDING_DRAWING)
             os.remove(FILENAME_PENDING_DRAWING)
             print("drawing pending steps")
-            controller.draw_steps_with_delays(pending_steps_with_delays)
+#            controller.draw_steps_with_delays(pending_steps_with_delays)
             print("finished drawing pending steps")
             clearTable = False
         else:
