@@ -5,3 +5,4 @@
 ./THR/hexagoner.thr
 ./THR/sunburst.thr
 ./THR/dougs3.thr
+./THR/secretgarden.thr

@@ -5,7 +5,6 @@ from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 running = True
 controller = Controller()
-playlist = Playlist()
 
 def main():
     try:
@@ -30,10 +29,7 @@ def main():
 def write_to_file(steps, file_name):
     with open(file_name, "wt") as steps_file:
         for step in steps:
-            steps_file.write(step[0])
-            steps_file.write(" ")
-            steps_file.write(step[1])
-            steps_file.write("\n")
+            steps_file.write(str(step[0]) + " " + str(step[1]) + "\n")
 
 def signal_handler(sig, frame):
     print("terminating the program through SIGINT")
