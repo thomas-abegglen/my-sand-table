@@ -14,8 +14,8 @@ CLEAR_MODE_IN_IN = "in_in"
 
 class Controller():
 
-    DEFAULT_SPEED = 800 #nbr of steps per second
-    MAX_SPEED = 1000 #nbr of steps per second
+    DEFAULT_SPEED = 1000 #nbr of steps per second
+    MAX_SPEED = 1500 #nbr of steps per second
 
     CALIBRATION_NBR_THETA_STEPS = "nbr_theta_steps"
     CALIBRATION_NBR_RHO_STEPS = "nbr_rho_steps"
@@ -196,8 +196,8 @@ class Controller():
             if self.pendingShutdown:
                 print("shutdown detected, writing pending steps to file for later drawing...")
                 #dump pending steps_with_delays to file
-                with open(FILENAME_PENDING_DRAWING, "w") as json_file:
-                    json.dump(steps_with_delays[i:].to_list(), json_file, indent=6)
+#                with open(FILENAME_PENDING_DRAWING, "w") as json_file:
+#                    json.dump(steps_with_delays[i:].to_list(), json_file, indent=6)
 
                 print("file with pending steps dumped")
                 return
