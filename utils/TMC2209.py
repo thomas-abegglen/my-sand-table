@@ -1,5 +1,5 @@
-#import utils.GPIOs as GPIOs
-import utils.GPIOs_Mock as GPIOs
+import utils.GPIOs as GPIOs
+#import utils.GPIOs_Mock as GPIOs
 import time
 
 MOTOR_DIR_FORWARD = 'forward'

@@ -1,8 +1,8 @@
+import utils.GPIOs as GPIOs
+#import utils.GPIOs_Mock as GPIOs
 import glob, os, math, random, time, threading
 import numpy as np
 import json
-#import utils.GPIOs as GPIOs
-import utils.GPIOs_Mock as GPIOs
 from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_PENDING_DRAWING = "./pending_drawing.json"

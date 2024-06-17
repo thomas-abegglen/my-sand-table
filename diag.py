@@ -1,5 +1,5 @@
-#import utils.GPIOs as GPIOs
-import utils.GPIOs_Mock as GPIOs
+import utils.GPIOs as GPIOs
+#import utils.GPIOs_Mock as GPIOs
 import numpy as np
 from Controller import Controller
 from Playlist import Playlist
