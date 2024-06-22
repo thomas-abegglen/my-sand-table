@@ -99,9 +99,9 @@ class Controller():
         lines = [line.rstrip('\n') for line in content]
         #print("lines 1:", lines[:29])
 
-        steps = np.array([0, 0])
+        createArray = True
+        steps = None
         #print("steps 1:", steps)
-
         for c in lines:
             if c.startswith("//") or c.startswith("#") or len(c) == 0:
                 continue
@@ -114,14 +114,13 @@ class Controller():
             theta = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * theta / (2 * math.pi))
             rho = int(self.calibration[self.CALIBRATION_NBR_RHO_STEPS] * rho)
 
-            steps = np.vstack((steps, [theta, rho]))
+                        
+            if createArray:
+                steps = np.array([theta, rho])
+                createArray = False
+            else:
+                steps = np.vstack((steps, [theta, rho]))
 
-        #print("steps 2:", steps)
-        min_value = steps[1:, 0].min() #suche den kleinsten Wert aus den theta-Werten
-        #print("min_value:", min_value)
-
-        steps[1:, 0] -= min_value
-        #print("steps 3:", steps)
         return steps
 
     def calc_deltasteps(self, deltasteps):
