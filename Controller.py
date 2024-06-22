@@ -103,7 +103,7 @@ class Controller():
         #print("steps 1:", steps)
 
         for c in lines:
-            if c.startswith("//"):
+            if c.startswith("//") or c.startswith("#") or len(c) == 0:
                 continue
 
             theta = float(c[:c.find(" ")])
