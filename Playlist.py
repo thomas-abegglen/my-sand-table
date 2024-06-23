@@ -1,13 +1,15 @@
-import os
+import os, logging
 from Controller import CLEAR_MODE_IN_IN, CLEAR_MODE_IN_OUT, CLEAR_MODE_OUT_IN, CLEAR_MODE_OUT_OUT
 
 FILENAME_PLAYLIST = "./playlist.txt"
 DIR_THR_FILES = "./THR/"
 
 class Playlist():
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename='my-sand-table.log', encoding='utf-8', level=logging.DEBUG)
 
     def __init__(self):
-        print("initializing...")
+        self.logger.info("initializing...")
         self.thr_files = list()
 
         if os.path.isfile(FILENAME_PLAYLIST):
@@ -32,7 +34,7 @@ class Playlist():
                 self.thr_files.append(DIR_THR_FILES+file)
 
     def write_playlist_file(self, file_name):
-        print("write_playlist_file")
+        self.logger.debug("write_playlist_file")
         with open(file_name, "wt") as playlist_file:
             for file in self.thr_files:
                 playlist_file.write(file)

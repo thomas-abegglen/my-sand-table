@@ -1,4 +1,4 @@
-import signal, time, os.path
+import signal, time, os.path, logging
 from Controller import Controller, FILENAME_PENDING_DRAWING
 from Playlist import Playlist
 from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
@@ -8,20 +8,22 @@ FILENAME_CALIBRATION = "./calibration.json"
 running = True
 controller = Controller()
 playlist = Playlist()
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='my-sand-table.log', encoding='utf-8', level=logging.DEBUG)
 
 def main():
     try:
         signal.signal(signal.SIGTERM, signal_handler)
 
-        print("initializing controller")
+        logger.info("initializing controller")
 
         #Calibration-file exists? Yes: read it, No: --> calibrate
         if os.path.isfile(FILENAME_CALIBRATION):
-            print("calibration file exists, reading it...")
+            logger.info("calibration file exists, reading it...")
             controller.read_calibration_file(FILENAME_CALIBRATION)
-            print("calibration file read")
+            logger.info("calibration file read")
         else:
-            print("no calibration file exists. Perform calibration...")
+            logger.info("no calibration file exists. Perform calibration...")
             #measure number of steps from Rho: 0.0 to Rho: 1.0
             #first step: move to Rho: 0.0
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
@@ -36,19 +38,19 @@ def main():
             
             #third step: write calibration file
             controller.write_calibration_file(FILENAME_CALIBRATION)
-            print("calibration finished")
+            logger.info("calibration finished")
 
         global running
         running = True
 
         #Pending Drawing? Yes: read it, set 'clearTable' to False and continue 
         if os.path.isfile(FILENAME_PENDING_DRAWING):
-            print("pending drawing detected. reading pending steps from file...")
+            logger.info("pending drawing detected. reading pending steps from file...")
 #            pending_steps_with_delays = controller.read_pending_drawing_file(FILENAME_PENDING_DRAWING)
             os.remove(FILENAME_PENDING_DRAWING)
-            print("drawing pending steps")
+            logger.info("drawing pending steps")
 #            controller.draw_steps_with_delays(pending_steps_with_delays)
-            print("finished drawing pending steps")
+            logger.info("finished drawing pending steps")
             clearTable = False
         else:
             clearTable = True
@@ -57,7 +59,7 @@ def main():
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         while running:
-            print("running, clearTable:", clearTable)
+            logger.info("running, clearTable:", clearTable)
             reverseNextFile = False
             
             #clear table
@@ -66,21 +68,21 @@ def main():
                 controller.clear_table(clear_mode=clear_mode[0])
                 reverseNextFile = clear_mode[1]
 
-            print("drawing: ", playlist.get_current_file(), "reverseNextFile: ", reverseNextFile)
+            logger.info("drawing: ", playlist.get_current_file(), "reverseNextFile: ", reverseNextFile)
             controller.draw_theta_rho_file(playlist.get_current_file(), reverseNextFile)
 
             #once we have drawn a table, we will clear before drawing the next table
             clearTable = True
 
-            print("checking if we should continue drawing...")
-            print("debug: running:", running, "NextTableButtonPressed:", controller.NextTableButtonPressed())
+            logger.info("checking if we should continue drawing...")
+            logger.info("debug: running:", running, "NextTableButtonPressed:", controller.NextTableButtonPressed())
 
             #wait until we have to draw next file
             while running and not controller.NextTableButtonPressed():
-                print("NextTableButtonPressed is false, sleeping...")                
+                logger.info("NextTableButtonPressed is false, sleeping...")                
                 time.sleep(0.5)
 
-            print("drawing next table")
+            logger.info("drawing next table")
             playlist.move_to_next_file()    
         
         #if we are here, we left the endless-loop
@@ -89,14 +91,14 @@ def main():
 
 
     except KeyboardInterrupt:
-        print("terminating the program through KeyboardInterrupt")
+        logger.info("terminating the program through KeyboardInterrupt")
         running = False
         controller.shutdown()
 
 
 
 def signal_handler(sig, frame):
-    print("terminating the program through SIGINT")
+    logger.info("terminating the program through SIGINT")
     global running
     running = False
     controller.shutdown()
