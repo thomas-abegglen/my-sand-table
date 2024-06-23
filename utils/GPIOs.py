@@ -1,4 +1,4 @@
-import os
+import os, logging
 import RPi.GPIO as GPIO
 
 SHUTDOWN_LED = 2
@@ -18,9 +18,11 @@ SWITCH_OUT = 5
 SWITCH_IN = 6
 
 NEXTTABLE_BUTTON = 26
+logger = logging.getLogger("GPIOs")
 
 def init():
-    print("initializing GPIOs...")
+
+    logger.info("initializing GPIOs...")
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -54,7 +56,7 @@ def init():
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
     GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
 
-    print("GPIOs initialization finished.")
+    logger.info("GPIOs initialization finished.")
 
 
 
@@ -65,7 +67,7 @@ def output(pin, value):
     GPIO.output(pin, value)
 
 def cleanup():
-    print("cleaning up GPIOs...")
+    logger.info("cleaning up GPIOs...")
 
     #disable Motors
     GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
@@ -80,4 +82,4 @@ def cleanup():
 
     GPIO.cleanup()
 
-    print("GPIOs cleanup finished.")
+    logger.info("GPIOs cleanup finished.")

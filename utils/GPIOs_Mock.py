@@ -1,3 +1,5 @@
+import logging
+
 SHUTDOWN_LED = 2
 SHUTDOWN_BUTTON = 3
 
@@ -32,12 +34,14 @@ NbrOfCallsUntilMockValue = {
 
 }
 
+logger = logging.getLogger(__name__)
+
 
 def init():
-    print("initializing GPIOs...")
+    logger.info("initializing GPIOs...")
 
 def input(pin):
-    #print("GPIOs.input pin:", pin)
+    logger.debug("GPIOs.input pin:", pin)
 
     #lookup pin in Dictionary for the mock-values
     mockData = NbrOfCallsUntilMockValue[pin]
@@ -51,7 +55,7 @@ def input(pin):
     return mockData[2] if mockData[0] < mockData[1] else mockData[3]
 
 def output(pin, value):
-    print("GPIOs.output pin:", pin, "value:", value)
+    logger.debug("GPIOs.output pin:", pin, "value:", value)
 
 def cleanup():
-    print("GPIOs.cleanup")
+    logger.info("GPIOs.cleanup")

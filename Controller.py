@@ -21,7 +21,6 @@ class Controller():
     CALIBRATION_NBR_RHO_STEPS = "nbr_rho_steps"
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename='my-sand-table.log', encoding='utf-8', level=logging.DEBUG)
 
     M_Theta = TMC2209(dir_pin=GPIOs.MOTOR_THETA_DIR, step_pin=GPIOs.MOTOR_THETA_STEP, enable_pin=GPIOs.MOTOR_THETA_ENABLE, limit_switches=None)
     M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
@@ -64,7 +63,7 @@ class Controller():
         self.M_Theta.stop()
         self.M_Theta.running = False
 
-        # print("M_Theta done!")
+        self.logger.debug("M_Theta done!")
 
     def run_M_Rho(self, steps, delay):
         if steps != 0 and delay >= 0:
@@ -77,7 +76,7 @@ class Controller():
         self.M_Rho.running = False
         self.current_rho_step_position += steps
 
-        # print("M_Rho done!")
+        self.logger.debug("M_Rho done!")
     
     def run_M_Rho_Until_Switch(self, dir):
         if(dir == MOTOR_DIR_FORWARD):
