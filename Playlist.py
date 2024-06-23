@@ -94,7 +94,7 @@ class Playlist():
             #loop until last line without "//" at the beginning
             lineIndex = -1
             lastLine = lines[lineIndex].rstrip('\n')
-            while lastLine.startswith("//"):
+            while lastLine.startswith("//") or lastLine.startswith("#") or len(lastLine) == 0:
                 lineIndex -= 1
                 lastLine = lines[lineIndex].rstrip('\n')
 
@@ -106,7 +106,7 @@ class Playlist():
             #loop until first line without "//" at the beginning
             lineIndex = 0
             firstLine = lines[lineIndex].rstrip('\n')
-            while firstLine.startswith("//"):
+            while firstLine.startswith("//") or firstLine.startswith("#") or len(firstLine) == 0:
                 lineIndex += 1
                 firstLine = lines[lineIndex].rstrip('\n')
             

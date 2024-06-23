@@ -203,10 +203,10 @@ class Controller():
 
     def get_current_rho_position(self):
         #print("current_rho_position:", self.current_rho_step_position)
-        if self.current_rho_step_position < 100:
-            return 0
+        if self.current_rho_step_position <= self.calibration[self.CALIBRATION_NBR_RHO_STEPS]:
+            return 0.0
         else:
-            return self.current_rho_step_position
+            return 1.0
 
     def stop_motors(self):
         self.M_Theta.running = False
@@ -220,19 +220,19 @@ class Controller():
 
         if clear_mode == CLEAR_MODE_IN_OUT:
             print("CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, 0], [314, 1]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_OUT_IN:
             print("CLEAR_MODE_OUT_IN")
-            coors = np.array([[0, 1], [314, 0]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 1], [314, 0]])
         elif clear_mode == CLEAR_MODE_OUT_OUT:
             print("CLEAR_MODE_OUT_OUT")
-            coors = np.array([[0, 1], [157, 0], [314, 1]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 1], [157, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_IN_IN:
             print("CLEAR_MODE_IN_IN")
-            coors = np.array([[0, 0], [157, 1], [314, 0]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [157, 1], [314, 0]])
         else:
             print("default: CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, 0], [314, 1]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
 
         steps = self.coors_to_steps(coors)
         delta_steps = self.calc_deltasteps(steps)

@@ -165,8 +165,8 @@ def printMenu_RhoMotor():
 def printMenu_Controller():
     controller = Controller()
 
-    if os.path.isfile("/home/sisyphus/Projects/my-sand-table/calibration.json"):
-        controller.read_calibration_file("/home/sisyphus/Projects/my-sand-table/calibration.json")
+    if os.path.isfile("./calibration.json"):
+        controller.read_calibration_file("./calibration.json")
     else:
         steps = controller.run_M_Rho_Until_Switch(MOTOR_DIR_BACKWARD)
         print('#steps performed until switch: ', steps)
@@ -177,11 +177,11 @@ def printMenu_Controller():
         #steps -= 40
 
         controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=steps)
-        controller.write_calibration_file("/home/sisyphus/Projects/my-sand-table/calibration.json")
+        controller.write_calibration_file("./calibration.json")
 
     while(True):
         os.system('clear')
-        print("Menu\r\n1) Move Rho OUT until switch\r\n2) Move Rho IN until switch\r\n3) Move to Coord\r\n0) Exit")
+        print("Menu\r\n1) Move Rho OUT until switch\r\n2) Move Rho IN until switch\r\n3) Move to Coord\r\n4) Get clear coords\r\n0) Exit")
         menuChoice = input()
 
         if menuChoice == "1":
@@ -203,7 +203,7 @@ def printMenu_Playlist():
     current_rho_position = 0
     while(True):
         os.system('clear')
-        print("Menu\r\n1) Print playlist state\r\n2) Move to next file\r\n3) Calc clear_mode and reversal_mode for next table\r\n0) Exit")
+        print("Menu\r\n1) Print playlist state\r\n2) Move to next file\r\n3) Calc clear_mode and reversal_mode for next table\r\n4) Set current_rho_position\r\n0) Exit")
         menuChoice = input()
 
         if menuChoice == "1":
@@ -220,6 +220,11 @@ def printMenu_Playlist():
             print("start_rho_position:", playlist.get_current_start_rho(), "end_rho_position:", playlist.get_current_end_rho())
             clear_mode = playlist.get_clear_mode(current_rho=current_rho_position)
             print("clear_mode:", clear_mode[0], "reverse_table:", clear_mode[1])
+            input()
+        elif menuChoice == "4":
+            print("current_rho_position:", current_rho_position)
+            print("insert new rho-position: ")
+            current_rho_position = input()
             input()
         else:
             return
