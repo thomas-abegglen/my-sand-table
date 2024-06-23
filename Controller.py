@@ -215,7 +215,7 @@ class Controller():
             if self.current_rho_step_position == 0:
                 return 0
             else:
-                return self.calibration[self.CALIBRATION_NBR_RHO_STEPS] / self.current_rho_step_position 
+                return self.current_rho_step_position / self.calibration[self.CALIBRATION_NBR_RHO_STEPS]
 
 
     def stop_motors(self):
@@ -243,6 +243,8 @@ class Controller():
         else:
             print("default: CLEAR_MODE_IN_OUT")
             coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
+
+        print("clear_table. coors:", coors)
 
         steps = self.coors_to_steps(coors)
         delta_steps = self.calc_deltasteps(steps)
