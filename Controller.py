@@ -90,7 +90,7 @@ class Controller():
             self.current_rho_step_position = 0
             return steps
         else:
-            self.logger.info("Unknown direction: ", dir)
+            self.logger.info("Unknown direction: %s", dir)
 
     def get_steps(self, thr_file, reverse_file=False):
         with open(thr_file, 'r') as f:
@@ -100,18 +100,18 @@ class Controller():
             content.reverse()
 
         lines = [line.rstrip('\n') for line in content]
-        self.logger.debug("lines 1:", lines[:29])
+        self.logger.debug("lines 1: %s", lines[:29])
 
         createArray = True
         steps = None
-        self.logger.debug("steps 1:", steps)
+        self.logger.debug("steps 1: %s", steps)
         for c in lines:
             if c.startswith("//") or c.startswith("#") or len(c) == 0:
                 continue
 
             theta = float(c[:c.find(" ")])
             rho = float(c[c.find(" ")+1:])
-            self.logger.debug("theta:", theta, "rho:", rho)
+            self.logger.debug("theta: %s, rho: %s", theta, rho)
 
             #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
             theta = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * theta / (2 * math.pi))
@@ -127,13 +127,13 @@ class Controller():
         return steps
 
     def calc_deltasteps(self, deltasteps):
-        self.logger.debug("steps[1:]", steps[1:]) #alles aus steps ohne die erste Zeile
-        self.logger.debug("steps[:-1]", steps[:-1]) #alles aus steps ohne die letzte Zeile
-        self.logger.debug("calc_deltasteps(", deltasteps, ")")
+        self.logger.debug("steps[1:] %s", steps[1:]) #alles aus steps ohne die erste Zeile
+        self.logger.debug("steps[:-1] %s", steps[:-1]) #alles aus steps ohne die letzte Zeile
+        self.logger.debug("calc_deltasteps(%s)", deltasteps)
         return deltasteps[1:] - deltasteps[:-1]
 
     def coors_to_steps(self, coors):
-        self.logger.debug("coors_to_steps(", coors, ")")
+        self.logger.debug("coors_to_steps(%s)", coors)
 
         steps = np.copy(coors)
         for step in steps:
@@ -146,25 +146,25 @@ class Controller():
     def add_delays(self, steps):
         delays = np.array([0, 0])
         for s in steps:
-            self.logger.debug("step:", s)
+            self.logger.debug("step: %s", s)
             elapsed_time = abs(s[0]) / self.DEFAULT_SPEED #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
-            self.logger.debug("elapsed_time:", elapsed_time)
+            self.logger.debug("elapsed_time: %s", elapsed_time)
             if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
                 self.logger.debug("Theta mit DEFAULT_SPEED")
                 Theta_delay = 1 / self.DEFAULT_SPEED #delay für Theta mit DEFAULT_SPEED berechnen
                 Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Rho berechnen (sollte zwischen DEFAULT_SPEED und MAX_SPEED liegen)
-                self.logger.debug("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
+                self.logger.debug("Theta_delay: %s, Rho_delay: %s", Theta_delay, Rho_delay)
             else:
                 #entweder ist die theta-Verschiebung 0 oder es müsste für Rho schneller gehen als mit MAX_SPEED
                 self.logger.debug("Rho mit MAX_SPEED")
                 min_time = abs(s[1]) / self.MAX_SPEED #wie lange dauert rho-Verschiebung mit MAX_SPEED?
                 Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED liegen)
                 Rho_delay = 1 / self.MAX_SPEED #delay für Linear mit MAX_SPEED berechnen
-                self.logger.debug("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
+                self.logger.debug("Theta_delay: %s, Rho_delay: %s", Theta_delay, Rho_delay)
     
             delays = np.vstack((delays, [Theta_delay, Rho_delay]))
 
-        self.logger.debug("delays:", delays)
+        self.logger.debug("delays: %s", delays)
         delays = delays[1:]
         steps_with_delays = np.concatenate((steps, delays), axis=1)
 
@@ -179,7 +179,7 @@ class Controller():
 
     def draw_steps_with_delays(self, steps_with_delays):
         for i in range(len(steps_with_delays)):
-            self.logger.debug("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
+            self.logger.debug("theta step: %s, rho_step: %s, theta_delay: %s, rho_delay: %s", steps_with_delays[i][0], steps_with_delays[i][1], steps_with_delays[i][2], steps_with_delays[i][3])
             
             #pass values to M_Theta/M_Rho and create threads
             M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(steps_with_delays[i][0], steps_with_delays[i][2],))
@@ -196,17 +196,17 @@ class Controller():
             M_Rho_Thread.join()
 
             if self.pendingShutdown:
-                print("shutdown detected, writing pending steps to file for later drawing...")
+                self.logger.info("shutdown detected, writing pending steps to file for later drawing...")
                 #dump pending steps_with_delays to file
 #                with open(FILENAME_PENDING_DRAWING, "w") as json_file:
 #                    json.dump(steps_with_delays[i:].to_list(), json_file, indent=6)
 
-                print("file with pending steps dumped")
+                self.logger.ubfi("file with pending steps dumped")
                 return
 
     def get_current_rho_position(self, snapToInOut=False):
         threshold = self.calibration[self.CALIBRATION_NBR_RHO_STEPS]/2
-        print("get_current_rho_position, current_rho_step_position:", self.current_rho_step_position, "threshold:", threshold)
+        self.logger.debug("get_current_rho_position, current_rho_step_position: %s, threshold: %s", self.current_rho_step_position, threshold)
 
         if snapToInOut:
             if self.current_rho_step_position <= threshold:
@@ -226,28 +226,28 @@ class Controller():
         self.M_Rho.running = False
         self.M_Theta.stop()
         self.M_Rho.stop()
-        print("\n---------- Motors Stopped! ----------")
+        self.logger.info("\n---------- Motors Stopped! ----------")
 
     def clear_table(self, clear_mode):
-        print("Clearing table")
+        self.logger.info("Clearing table")
 
         if clear_mode == CLEAR_MODE_IN_OUT:
-            print("CLEAR_MODE_IN_OUT")
+            self.logger.debug("CLEAR_MODE_IN_OUT")
             coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_OUT_IN:
-            print("CLEAR_MODE_OUT_IN")
+            self.logger.debug("CLEAR_MODE_OUT_IN")
             coors = np.array([[0, self.get_current_rho_position()], [0, 1], [314, 0]])
         elif clear_mode == CLEAR_MODE_OUT_OUT:
-            print("CLEAR_MODE_OUT_OUT")
+            self.logger.debug("CLEAR_MODE_OUT_OUT")
             coors = np.array([[0, self.get_current_rho_position()], [0, 1], [157, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_IN_IN:
-            print("CLEAR_MODE_IN_IN")
+            self.logger.debug("CLEAR_MODE_IN_IN")
             coors = np.array([[0, self.get_current_rho_position()], [0, 0], [157, 1], [314, 0]])
         else:
-            print("default: CLEAR_MODE_IN_OUT")
+            self.logger.debug("default: CLEAR_MODE_IN_OUT")
             coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
 
-        print("clear_table. coors:", coors)
+        self.logger.debug("clear_table. coors: %s", coors)
 
         steps = self.coors_to_steps(coors)
         delta_steps = self.calc_deltasteps(steps)
@@ -255,18 +255,18 @@ class Controller():
 
         self.draw_steps_with_delays(steps_with_delays)
 
-        print("finished clearing table")
+        self.logger.info("finished clearing table")
 
     def NextTableButtonPressed(self):
         return GPIOs.input(GPIOs.NEXTTABLE_BUTTON)
 
     def shutdown(self):
-        print("controller.shutdown")
+        self.logger.info("controller.shutdown")
 
         self.pendingShutdown = True
         
-        print("stopping motors...")
+        self.logger.info("stopping motors...")
         self.stop_motors()
 
-        print("cleanup GPIOs")
+        self.logger.info("cleanup GPIOs")
         #GPIOs.cleanup()

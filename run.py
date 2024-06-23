@@ -59,7 +59,7 @@ def main():
             controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
 
         while running:
-            logger.info("running, clearTable:", clearTable)
+            logger.info("running, clearTable: %s", clearTable)
             reverseNextFile = False
             
             #clear table
@@ -68,14 +68,14 @@ def main():
                 controller.clear_table(clear_mode=clear_mode[0])
                 reverseNextFile = clear_mode[1]
 
-            logger.info("drawing: ", playlist.get_current_file(), "reverseNextFile: ", reverseNextFile)
+            logger.info("drawing: %s, reverseNextFile: %s", playlist.get_current_file(), reverseNextFile)
             controller.draw_theta_rho_file(playlist.get_current_file(), reverseNextFile)
 
             #once we have drawn a table, we will clear before drawing the next table
             clearTable = True
 
             logger.info("checking if we should continue drawing...")
-            logger.info("debug: running:", running, "NextTableButtonPressed:", controller.NextTableButtonPressed())
+            logger.info("debug: running: %s, NextTableButtonPressed: %s", running, controller.NextTableButtonPressed())
 
             #wait until we have to draw next file
             while running and not controller.NextTableButtonPressed():
