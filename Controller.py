@@ -202,8 +202,10 @@ class Controller():
                 return
 
     def get_current_rho_position(self):
-        #print("current_rho_position:", self.current_rho_step_position)
-        if self.current_rho_step_position <= self.calibration[self.CALIBRATION_NBR_RHO_STEPS]:
+        threshold = self.calibration[self.CALIBRATION_NBR_RHO_STEPS]/2
+        print("get_current_rho_position, current_rho_step_position:", self.current_rho_step_position, "threshold:", threshold)
+
+        if self.current_rho_step_position <= threshold:
             return 0.0
         else:
             return 1.0

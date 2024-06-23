@@ -1,4 +1,4 @@
-./THR/in_out.thr
+./THR/in_almost_out.thr
 ./THR/sharpSawtooth.thr
 ./THR/Reverse-HEP.thr
 ./THR/dougsSpiralTriangle2.thr
