@@ -127,8 +127,8 @@ class Controller():
         return steps
 
     def calc_deltasteps(self, deltasteps):
-        self.logger.debug("steps[1:] %s", steps[1:]) #alles aus steps ohne die erste Zeile
-        self.logger.debug("steps[:-1] %s", steps[:-1]) #alles aus steps ohne die letzte Zeile
+        self.logger.debug("deltasteps[1:] %s", deltasteps[1:]) #alles aus steps ohne die erste Zeile
+        self.logger.debug("deltasteps[:-1] %s", deltasteps[:-1]) #alles aus steps ohne die letzte Zeile
         self.logger.debug("calc_deltasteps(%s)", deltasteps)
         return deltasteps[1:] - deltasteps[:-1]
 
