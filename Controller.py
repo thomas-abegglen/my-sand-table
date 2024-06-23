@@ -201,14 +201,22 @@ class Controller():
                 print("file with pending steps dumped")
                 return
 
-    def get_current_rho_position(self):
+    def get_current_rho_position(self, snapToInOut=False):
         threshold = self.calibration[self.CALIBRATION_NBR_RHO_STEPS]/2
         print("get_current_rho_position, current_rho_step_position:", self.current_rho_step_position, "threshold:", threshold)
 
-        if self.current_rho_step_position <= threshold:
-            return 0.0
+        if snapToInOut:
+            if self.current_rho_step_position <= threshold:
+                return 0.0
+            else:
+                return 1.0
         else:
-            return 1.0
+            #avoid a division by 0
+            if self.current_rho_step_position == 0:
+                return 0
+            else:
+                return self.calibration[self.CALIBRATION_NBR_RHO_STEPS] / self.current_rho_step_position 
+
 
     def stop_motors(self):
         self.M_Theta.running = False

@@ -62,7 +62,7 @@ def main():
             
             #clear table
             if clearTable:
-                clear_mode = playlist.get_clear_mode(controller.get_current_rho_position())
+                clear_mode = playlist.get_clear_mode(controller.get_current_rho_position(snapToInOut=True))
                 controller.clear_table(clear_mode=clear_mode[0])
                 reverseNextFile = clear_mode[1]
 
