@@ -1,11 +1,11 @@
+./THR/dougs3.thr
+./THR/hexagoner.thr
+./THR/Dougs OctaSwitcher.thr
 ./THR/in_almost_out.thr
 ./THR/sharpSawtooth.thr
 ./THR/Reverse-HEP.thr
 ./THR/dougsSpiralTriangle2.thr
-./THR/Dougs OctaSwitcher.thr
-./THR/hexagoner.thr
 ./THR/sunburst.thr
-./THR/dougs3.thr
 ./THR/LineTests.thr
 ./THR/BinarySupport.thr
 ./THR/secretgarden.thr

@@ -1,5 +1,5 @@
-import utils.GPIOs as GPIOs
-#import utils.GPIOs_Mock as GPIOs
+#import utils.GPIOs as GPIOs
+import utils.GPIOs_Mock as GPIOs
 import glob, os, math, random, time, threading
 import numpy as np
 import json
@@ -14,6 +14,7 @@ CLEAR_MODE_IN_IN = "in_in"
 
 class Controller():
 
+    MIN_SPEED = 500 #nbr of steps per second
     DEFAULT_SPEED = 1000 #nbr of steps per second
     MAX_SPEED = 1500 #nbr of steps per second
 
@@ -142,21 +143,28 @@ class Controller():
 
     def add_delays(self, steps):
         delays = np.array([0, 0])
+
         for s in steps:
+            defaultSpeed = self.DEFAULT_SPEED
+            maxSpeed = self.MAX_SPEED
+            if abs(s[1]) < 100:
+                defaultSpeed = self.MIN_SPEED
+                maxSpeed = self.DEFAULT_SPEED
+
             #print("step:", s)
-            elapsed_time = abs(s[0]) / self.DEFAULT_SPEED #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
+            elapsed_time = abs(s[0]) / defaultSpeed #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
             #print("elapsed_time:", elapsed_time)
-            if elapsed_time > 0 and abs(s[1]) / elapsed_time <= self.MAX_SPEED: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
+            if elapsed_time > 0 and abs(s[1]) / elapsed_time <= maxSpeed: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
                 #print("Theta mit DEFAULT_SPEED")
-                Theta_delay = 1 / self.DEFAULT_SPEED #delay für Theta mit DEFAULT_SPEED berechnen
+                Theta_delay = 1 / defaultSpeed #delay für Theta mit DEFAULT_SPEED berechnen
                 Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Rho berechnen (sollte zwischen DEFAULT_SPEED und MAX_SPEED liegen)
                 #print("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
             else:
                 #entweder ist die theta-Verschiebung 0 oder es müsste für Rho schneller gehen als mit MAX_SPEED
                 #print("Rho mit MAX_SPEED")
-                min_time = abs(s[1]) / self.MAX_SPEED #wie lange dauert rho-Verschiebung mit MAX_SPEED?
+                min_time = abs(s[1]) / maxSpeed #wie lange dauert rho-Verschiebung mit MAX_SPEED?
                 Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED liegen)
-                Rho_delay = 1 / self.MAX_SPEED #delay für Linear mit MAX_SPEED berechnen
+                Rho_delay = 1 / maxSpeed #delay für Linear mit MAX_SPEED berechnen
                 #print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
     
             delays = np.vstack((delays, [Theta_delay, Rho_delay]))
