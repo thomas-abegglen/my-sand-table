@@ -1,5 +1,5 @@
-#import utils.GPIOs as GPIOs
-import utils.GPIOs_Mock as GPIOs
+import utils.GPIOs as GPIOs
+#import utils.GPIOs_Mock as GPIOs
 import glob, os, math, random, time, threading
 import numpy as np
 import json
