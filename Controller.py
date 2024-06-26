@@ -239,7 +239,7 @@ class Controller():
 
         if clear_mode == CLEAR_MODE_IN_OUT:
             print("CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0.1], [314, 1]])
         elif clear_mode == CLEAR_MODE_OUT_IN:
             print("CLEAR_MODE_OUT_IN")
             coors = np.array([[0, self.get_current_rho_position()], [0, 1], [314, 0]])
@@ -248,10 +248,10 @@ class Controller():
             coors = np.array([[0, self.get_current_rho_position()], [0, 1], [157, 0], [314, 1]])
         elif clear_mode == CLEAR_MODE_IN_IN:
             print("CLEAR_MODE_IN_IN")
-            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [157, 1], [314, 0]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0.1], [157, 1], [314, 0]])
         else:
             print("default: CLEAR_MODE_IN_OUT")
-            coors = np.array([[0, self.get_current_rho_position()], [0, 0], [314, 1]])
+            coors = np.array([[0, self.get_current_rho_position()], [0, 0.1], [314, 1]])
 
         print("clear_table. coors:", coors)
 
