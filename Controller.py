@@ -14,7 +14,8 @@ CLEAR_MODE_IN_IN = "in_in"
 
 class Controller():
 
-    MIN_SPEED = 500 #nbr of steps per second
+    SLOW_DEFAULT_SPEED = 100 #nbr of steps per second
+    SLOW_MAX_SPEED = 200 #nbr of steps per second
     DEFAULT_SPEED = 1000 #nbr of steps per second
     MAX_SPEED = 1500 #nbr of steps per second
 
@@ -147,9 +148,9 @@ class Controller():
         for s in steps:
             defaultSpeed = self.DEFAULT_SPEED
             maxSpeed = self.MAX_SPEED
-            if abs(s[1]) < 100:
-                defaultSpeed = self.MIN_SPEED
-                maxSpeed = self.DEFAULT_SPEED
+            if max(abs(s[0]), abs(s[1])) < 100:
+                defaultSpeed = self.SLOW_DEFAULT_SPEED
+                maxSpeed = self.SLOW_MAX_SPEED
 
             #print("step:", s)
             elapsed_time = abs(s[0]) / defaultSpeed #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
