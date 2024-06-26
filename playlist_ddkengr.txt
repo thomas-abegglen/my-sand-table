@@ -1,0 +1,26 @@
+./THR/ddkengr/AcklingDykeDorset 6-4-2018.thr
+./THR/ddkengr/BattlesburyCampWilts 7-5-2017.thr
+./THR/ddkengr/BucklandDownDorset 5-26-2018.thr
+./THR/ddkengr/Butterfly.thr
+./THR/ddkengr/ChartresLabyrinthe.thr
+./THR/ddkengr/Cheesefoot Head 8-9-2012.thr
+./THR/ddkengr/CleyHill 7-18-2017.thr
+./THR/ddkengr/Fractal.thr
+./THR/ddkengr/HackpenHill 6-9-2018.thr
+./THR/ddkengr/HamptonHillsCross 2-18-2015.thr
+./THR/ddkengr/Hampton-on-Lucy 8-8-2015.thr
+./THR/ddkengr/Hosta.thr
+./THR/ddkengr/KeysleyDown 6-10-2018.thr
+./THR/ddkengr/LiddingtonCastle 6-24-2001.thr
+./THR/ddkengr/LongwoodWarrenHants 7-10-2018.thr
+./THR/ddkengr/MilkHill 6-2-2009.thr
+./THR/ddkengr/MilkHill 7-8-2011.thr
+./THR/ddkengr/Muncombe Hill 7-14-2018.thr
+./THR/ddkengr/OareWiltshire 6-21-2010.thr
+./THR/ddkengr/SixPennyHandley 4-6-2009.thr
+./THR/ddkengr/snowflake.thr
+./THR/ddkengr/Sponge.thr
+./THR/ddkengr/StarryNight.thr
+./THR/ddkengr/WiltonWindmill 5-22-2010.thr
+./THR/ddkengr/WinterbourneBassett 6-1-1997.thr
+./THR/ddkengr/WinterbourneStokeDown 7-18-2018.thr

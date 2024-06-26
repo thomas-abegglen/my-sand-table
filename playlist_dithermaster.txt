@@ -1,0 +1,16 @@
+./THR/dithermaster/dither_eccentricerase.thr
+./THR/dithermaster/dither_gears.thr
+./THR/dithermaster/dither_gosper4.thr
+./THR/dithermaster/dither_hypnogrid.thr
+./THR/dithermaster/dither_itsyourmove.thr
+./THR/dithermaster/dither_nautilus.thr
+./THR/dithermaster/dither_parallel.thr
+./THR/dithermaster/dither_sierpinski6.thr
+./THR/dithermaster/dither_sierpinski8.thr
+./THR/dithermaster/dither_sisinf.thr
+./THR/dithermaster/dither_sisinfturn.thr
+./THR/dithermaster/dither_strangthang.thr
+./THR/dithermaster/dither_sunburst.thr
+./THR/dithermaster/dither_tri4.thr
+./THR/dithermaster/dither_wormhole.thr
+./THR/dithermaster/dither_yinyang.thr

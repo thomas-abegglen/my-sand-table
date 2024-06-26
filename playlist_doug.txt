@@ -1,0 +1,4 @@
+./THR/doug/dougs3.thr
+./THR/doug/Dougs OctaSwitcher.thr
+./THR/doug/hexagoner.thr
+./THR/doug/sunburst.thr

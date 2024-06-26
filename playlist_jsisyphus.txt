@@ -1,0 +1,16 @@
+./THR/jsisyphus/AngularRadiance.thr
+./THR/jsisyphus/BunchOfValentines.thr
+./THR/jsisyphus/BurstyBezier.thr
+./THR/jsisyphus/NestedBubbles.thr
+./THR/jsisyphus/OrderlyTransition.thr
+./THR/jsisyphus/Petalar.thr
+./THR/jsisyphus/PolarValentine.thr
+./THR/jsisyphus/RandomlyCircular2.thr
+./THR/jsisyphus/RandomlyCircular.thr
+./THR/jsisyphus/RhoOffsetCalibration.thr
+./THR/jsisyphus/SimpleRadiance.thr
+./THR/jsisyphus/SineVsBezier2.thr
+./THR/jsisyphus/SineVsBezier.thr
+./THR/jsisyphus/SpiralBezier.thr
+./THR/jsisyphus/SpiralGyrations.thr
+./THR/jsisyphus/SwoopyRadiance.thr
