@@ -7,22 +7,6 @@
 ./THR/joshua/CleyHill 7-18-2017.thr
 ./THR/joshua/coolballs.thr
 ./THR/joshua/dither_cells.thr
-./THR/joshua/dither_eccentricerase.thr
-./THR/joshua/dither_gears.thr
-./THR/joshua/dither_gosper4.thr
-./THR/joshua/dither_hypnogrid.thr
-./THR/joshua/dither_itsyourmove.thr
-./THR/joshua/dither_nautilus.thr
-./THR/joshua/dither_parallel.thr
-./THR/joshua/dither_sierpinski6.thr
-./THR/joshua/dither_sierpinski8.thr
-./THR/joshua/dither_sisinf.thr
-./THR/joshua/dither_sisinfturn.thr
-./THR/joshua/dither_strangthang.thr
-./THR/joshua/dither_sunburst.thr
-./THR/joshua/dither_tri4.thr
-./THR/joshua/dither_wormhole.thr
-./THR/joshua/dither_yinyang.thr
 ./THR/joshua/flower.thr
 ./THR/joshua/focus.thr
 ./THR/joshua/Fractal1.thr
@@ -34,11 +18,6 @@
 ./THR/joshua/HackpenHill 6-9-2018.thr
 ./THR/joshua/HamptonHillsCross 2-18-2015.thr
 ./THR/joshua/Hampton-on-Lucy 8-8-2015.thr
-./THR/joshua/hero_11loop2.thr
-./THR/joshua/hero_13wave1.thr
-./THR/joshua/hero_5loop1.thr
-./THR/joshua/hero_7loop4.thr
-./THR/joshua/hero_9wave2.thr
 ./THR/joshua/HexagonAlley.thr
 ./THR/joshua/HexagonAlleyTight.thr
 ./THR/joshua/Hosta.thr
@@ -56,7 +35,6 @@
 ./THR/joshua/OareWiltshire 6-21-2010.thr
 ./THR/joshua/patterntester.thr
 ./THR/joshua/ringscape.thr
-./THR/joshua/secretgarden.thr
 ./THR/joshua/shell.thr
 ./THR/joshua/SierpinskiPentagon2.thr
 ./THR/joshua/SierpinskiTriangle2.thr
