@@ -1,5 +1,0 @@
-./THR/heropup/hero_11loop2.thr
-./THR/heropup/hero_13wave1.thr
-./THR/heropup/hero_5loop1.thr
-./THR/heropup/hero_7loop4.thr
-./THR/heropup/hero_9wave2.thr

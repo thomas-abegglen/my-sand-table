@@ -7,3 +7,5 @@
 ./THR/keep/hero_9wave2.thr
 ./THR/keep/hero_11loop2.thr
 ./THR/keep/hero_13wave1.thr
+./THR/keep/HexagonAlley.thr
+./THR/keep/HexagonAlleyTight.thr
