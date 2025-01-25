@@ -102,7 +102,7 @@ def printMenu_ThetaMotor():
             input()
         elif menuChoice == "4":
             #Set Direction HIGH
-            GPIOs.outptu(GPIOs.MOTOR_THETA_DIR, True)
+            GPIOs.output(GPIOs.MOTOR_THETA_DIR, True)
             input()
         elif menuChoice == "5":
             #Set Direction LOW
@@ -176,7 +176,7 @@ def printMenu_Controller():
         #safety margin: 40 steps
         #steps -= 40
 
-        controller.calibrate(nbr_theta_steps=16000, nbr_rho_steps=steps)
+        controller.calibrate(nbr_theta_steps=42666, nbr_rho_steps=steps)
         controller.write_calibration_file("./calibration.json")
 
     while(True):
