@@ -29,7 +29,7 @@ class Controller():
     current_rho_step_position = 0
 
     calibration = {
-        CALIBRATION_NBR_THETA_STEPS: 8 * 200 * 320 / 12,
+        CALIBRATION_NBR_THETA_STEPS: 8 * 200 * 320 / 12, #8: microsteps, 200: nbrOfSteps for the motor for one turn, 320: nbrOfTeeth of pully at axis, 12: nbrOfTeeth of pully at motor
         CALIBRATION_NBR_RHO_STEPS: 8285
     }
 
