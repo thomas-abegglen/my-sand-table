@@ -1,0 +1,2 @@
+./THR/test/test1.thr
+./THR/test/test2.thr

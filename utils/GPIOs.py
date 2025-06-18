@@ -19,11 +19,14 @@ SWITCH_IN = 6
 
 NEXTTABLE_BUTTON = 26
 
+LOW = GPIO.LOW
+HIGH = GPIO.HIGH
+
 def init():
     print("initializing GPIOs...")
 
     GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    #GPIO.setwarnings(False)
 
     GPIO.setup(SHUTDOWN_LED, GPIO.OUT)
     GPIO.setup(SHUTDOWN_BUTTON, GPIO.IN)
@@ -50,19 +53,19 @@ def init():
     GPIO.output(MOTOR_RHO_RELAY, GPIO.LOW)
     GPIO.output(MOTOR_THETA_RELAY, GPIO.LOW)
 
-    #set enable of both Motors to high (say: disable it). The TMC2209 software driver will enable them if needed
-    GPIO.output(MOTOR_RHO_ENABLE, GPIO.HIGH)
-    GPIO.output(MOTOR_THETA_ENABLE, GPIO.HIGH)
+    #enable of both Motors (set them to LOW)
+    GPIO.output(MOTOR_RHO_ENABLE, GPIO.LOW)
+    GPIO.output(MOTOR_THETA_ENABLE, GPIO.LOW)
 
     print("GPIOs initialization finished.")
-
-
+    pass
 
 def input(pin):
     return GPIO.input(pin)
 
 def output(pin, value):
     GPIO.output(pin, value)
+    pass
 
 def cleanup():
     print("cleaning up GPIOs...")
@@ -81,3 +84,4 @@ def cleanup():
     GPIO.cleanup()
 
     print("GPIOs cleanup finished.")
+    pass
