@@ -265,6 +265,8 @@ def main():
             wait_for_button_press()
 
     finally:
+        print("Schreibe current position in file...")
+        persist_current_position()
         GPIOs.cleanup()
 
 if __name__ == "__main__":
