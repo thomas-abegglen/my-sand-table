@@ -17,6 +17,9 @@ CALIBRATION_FILE = "calibration.dat"
 POSITION_FILE = "current_position.json"
 PLAYLIST_FILE = "playlist.txt"
 
+DIR_IN = 0
+DIR_OUT = 1
+
 # Position wird nur in Variablen gehalten, und nur im SIGTERM-Handler gespeichert
 current_position = {
     "theta": 0.0,
@@ -40,11 +43,19 @@ def dynamic_rho_delay(rho_norm):
     max_delay = 0.003
     return min_delay + (max_delay - min_delay) * rho_norm
 
+def set_motor_direction(motor_dir_pin, direction):
+    if direction == DIR_OUT:
+        GPIOs.output(motor_dir_pin, GPIOs.LOW)
+    elif direction == DIR_IN:
+        GPIOs.output(motor_dir_pin, GPIOs.HIGH)
+    else:
+        raise ValueError("Ungültige Richtung. Verwenden Sie 'Direction.IN' oder 'Direction.OUT'.")
+
 def calibrate_rho():
     print("Starte Kalibrierung von Rho...")
     # Fahre rückwärts bis zum Endschalter
-    print
-    GPIOs.output(GPIOs.MOTOR_RHO_DIR, GPIOs.LOW)
+    print("Starte Rückwärtsfahrt bis zum Endschalter...")
+    set_motor_direction(GPIOs.MOTOR_RHO_DIR, DIR_IN)
     while GPIOs.input(GPIOs.SWITCH_IN):
         step_motor(GPIOs.MOTOR_RHO_STEP)
         time.sleep(0.001)
@@ -55,7 +66,7 @@ def calibrate_rho():
     steps = 0
     # Fahre vorwärts bis zum Endschalter
     print("Starte Vorwärtsfahrt bis zum Endschalter...")
-    GPIOs.output(GPIOs.MOTOR_RHO_DIR, GPIOs.HIGH)
+    set_motor_direction(GPIOs.MOTOR_RHO_DIR, DIR_OUT)
     while GPIOs.input(GPIOs.SWITCH_OUT):
         step_motor(GPIOs.MOTOR_RHO_STEP)
         time.sleep(0.001)
@@ -120,8 +131,8 @@ def synchronized_move(delta_theta_steps, delta_rho_steps, theta_dir, rho_dir, ba
     theta_counter = 0
     rho_counter = 0
 
-    GPIOs.output(GPIOs.MOTOR_THETA_DIR, theta_dir)
-    GPIOs.output(GPIOs.MOTOR_RHO_DIR, rho_dir)
+    set_motor_direction(GPIOs.MOTOR_THETA_DIR, theta_dir)
+    set_motor_direction(GPIOs.MOTOR_RHO_DIR, rho_dir)
 
     for i in range(max_steps):
         if i / theta_interval >= theta_counter and theta_counter < abs(delta_theta_steps):
@@ -137,12 +148,12 @@ def move_to_position(current_theta, current_rho, target_theta, target_rho, rho_m
     target_theta_steps = int(target_theta / (2 * math.pi) * THETA_STEPS_PER_REV)
     
     delta_theta_steps = target_theta_steps - current_theta_steps
-    theta_dir = GPIOs.HIGH if delta_theta_steps >= 0 else GPIOs.LOW
+    theta_dir = DIR_OUT if delta_theta_steps >= 0 else DIR_IN
 
     current_rho_steps = int(current_rho * rho_max_steps)
     target_rho_steps = int(target_rho * rho_max_steps)
     delta_rho_steps = target_rho_steps - current_rho_steps
-    rho_dir = GPIOs.HIGH if delta_rho_steps >= 0 else GPIOs.LOW
+    rho_dir = DIR_OUT if delta_rho_steps >= 0 else DIR_IN
 
     base_delay = dynamic_rho_delay(target_rho)
 
