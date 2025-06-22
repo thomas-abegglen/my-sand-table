@@ -76,9 +76,9 @@ def calibrate_rho():
     with open(CALIBRATION_FILE, 'w') as f:
         f.write(str(steps))
 
-    #positioniere zu current_rho
-    move_to_position(current_position["theta"], 1.0, current_position["rho"], steps)
-    
+    #positioniere von 1.0 zu current_rho
+    move_to_position(current_position["theta"], 1.0, current_position["theta"], current_position["rho"], steps)
+
     print(f"Kalibrierung abgeschlossen. Schritte für Rho: {steps}")
     return steps
 
