@@ -26,7 +26,9 @@ current_position = {
 }
 
 # GPIO setup
+print(f"Initialisiere GPIOs..")
 GPIOs.init()
+print(f"GPIOs initialisiert.")
 
 def step_motor(step_pin):
     GPIOs.output(step_pin, GPIOs.HIGH)

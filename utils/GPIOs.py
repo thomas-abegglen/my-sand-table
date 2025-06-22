@@ -26,7 +26,7 @@ def init():
     print("initializing GPIOs...")
 
     GPIO.setmode(GPIO.BCM)
-    #GPIO.setwarnings(False)
+    GPIO.setwarnings(False)
 
     GPIO.setup(SHUTDOWN_LED, GPIO.OUT)
     GPIO.setup(SHUTDOWN_BUTTON, GPIO.IN)
