@@ -218,6 +218,7 @@ def main():
     try:
         rho_max_steps = load_calibration()
         current_theta, current_rho, last_file, last_index = load_last_position()
+        dirtyTable = False
 
         if not os.path.exists(PLAYLIST_FILE):
             print("Keine playlist.txt gefunden.")
@@ -234,7 +235,7 @@ def main():
             coordinates = read_thr_file(file)
             start_index = last_index if resume else 0
 
-            if not resume:
+            if dirtyTable:
                 current_theta, current_rho = clean_table(current_theta, current_rho, coordinates, rho_max_steps)
             
             resume = False  # Nur beim ersten Treffer fortsetzen
@@ -244,7 +245,7 @@ def main():
                 current_theta, current_rho = move_to_position(current_theta, current_rho, theta, rho, rho_max_steps)
                 save_current_position(current_theta, current_rho, file, i + 1)
                 time.sleep(0.5)
-
+            dirtyTable = True
             wait_for_button_press()
 
     finally:
