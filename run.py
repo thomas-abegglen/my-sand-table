@@ -75,6 +75,10 @@ def calibrate_rho():
 
     with open(CALIBRATION_FILE, 'w') as f:
         f.write(str(steps))
+
+    #positioniere zu current_rho
+    move_to_position(current_position["theta"], 1.0, current_position["rho"], steps)
+    
     print(f"Kalibrierung abgeschlossen. Schritte für Rho: {steps}")
     return steps
 
@@ -224,8 +228,8 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        rho_max_steps = load_calibration()
         current_theta, current_rho, last_file, last_index = load_last_position()
+        rho_max_steps = load_calibration()
         dirtyTable = False
 
         if not os.path.exists(PLAYLIST_FILE):
