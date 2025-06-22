@@ -43,23 +43,29 @@ def dynamic_rho_delay(rho_norm):
 def calibrate_rho():
     print("Starte Kalibrierung von Rho...")
     # Fahre rückwärts bis zum Endschalter
+    print
     GPIOs.output(GPIOs.MOTOR_RHO_DIR, GPIOs.LOW)
     while GPIOs.input(GPIOs.SWITCH_IN):
         step_motor(GPIOs.MOTOR_RHO_STEP)
         time.sleep(0.001)
 
+    print("Rückwärtsfahrt abgeschlossen. Warte 0.5 Sekunden...")
     time.sleep(0.5)
 
     steps = 0
     # Fahre vorwärts bis zum Endschalter
+    print("Starte Vorwärtsfahrt bis zum Endschalter...")
     GPIOs.output(GPIOs.MOTOR_RHO_DIR, GPIOs.HIGH)
     while GPIOs.input(GPIOs.SWITCH_OUT):
         step_motor(GPIOs.MOTOR_RHO_STEP)
         time.sleep(0.001)
         steps += 1
 
+    print("Vorwärtsfahrt abgeschlossen. Schritte gezählt:", steps)
     # Sicherheitsmarge: 40 Schritte
-    steps -= 40
+    #steps -= 40
+    #ToDo: 40 Schritte rückwärts fahren, um den Endschalter nicht zu beschädigen
+
     with open(CALIBRATION_FILE, 'w') as f:
         f.write(str(steps))
     print(f"Kalibrierung abgeschlossen. Schritte für Rho: {steps}")
