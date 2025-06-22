@@ -236,10 +236,13 @@ def main():
             playlist = [line.strip() for line in f if line.strip()]
 
         resume = False if not last_file else True
+        print("resume:", resume)
 
         for file in playlist:
             if resume and file != last_file:
                 continue
+
+            print(f"Verarbeite Datei: {file}")
             coordinates = read_thr_file(file)
             start_index = last_index if resume else 0
 
@@ -248,6 +251,7 @@ def main():
             
             resume = False  # Nur beim ersten Treffer fortsetzen
 
+            print(f"Starte bei Index {start_index}, laube bis {len(coordinates)} in Datei {file}")
             for i in range(start_index, len(coordinates)):
                 theta, rho = coordinates[i]
                 current_theta, current_rho = move_to_position(current_theta, current_rho, theta, rho, rho_max_steps)
