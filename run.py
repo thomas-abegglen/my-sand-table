@@ -55,11 +55,7 @@ def calibrate_rho():
     print("Starte Kalibrierung von Rho...")
     # Fahre rückwärts bis zum Endschalter
     print("Starte Rückwärtsfahrt bis zum Endschalter...")
-    set_motor_direction(GPIOs.MOTOR_RHO_DIR, DIR_IN)
-    while GPIOs.input(GPIOs.SWITCH_IN):
-        step_motor(GPIOs.MOTOR_RHO_STEP)
-        time.sleep(0.001)
-
+    move_to_center()
     print("Rückwärtsfahrt abgeschlossen. Warte 0.5 Sekunden...")
     time.sleep(0.5)
 
@@ -94,6 +90,9 @@ def load_last_position():
         with open(POSITION_FILE, 'r') as f:
             data = json.load(f)
             return data.get("theta", 0.0), data.get("rho", 0.0), data.get("current_file", ""), data.get("line_index", 0)
+
+    # bewege zum Zentrum und gebe die Zentrumposition zurück, wenn keine Position gespeichert ist
+    move_to_center()
     return 0.0, 0.0, "", 0
 
 def save_current_position(theta, rho, current_file, line_index):
@@ -142,6 +141,15 @@ def synchronized_move(delta_theta_steps, delta_rho_steps, theta_dir, rho_dir, ba
             step_motor(GPIOs.MOTOR_RHO_STEP)
             rho_counter += 1
         time.sleep(base_delay)
+
+def move_to_center():
+    print("Bewege zum Zentrum...")
+    set_motor_direction(GPIOs.MOTOR_RHO_DIR, DIR_IN)
+    while GPIOs.input(GPIOs.SWITCH_IN):
+        step_motor(GPIOs.MOTOR_RHO_STEP)
+        time.sleep(0.001)
+    print("Zentrum erreicht.")
+
 
 def move_to_position(current_theta, current_rho, target_theta, target_rho, rho_max_steps):
     current_theta_steps = int(current_theta / (2 * math.pi) * THETA_STEPS_PER_REV)
