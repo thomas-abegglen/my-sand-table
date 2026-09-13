@@ -191,9 +191,10 @@ def wait_for_button_press():
 
 def clean_table(current_theta, current_rho, coordinates, rho_max_steps):
     print("Reinige Tisch...")
+    # Bewege Rho auf 0.0 oder 1.0, je nach dem ob wir näher am Zentrum oder aussen sind
     new_rho = 0.0 if current_rho <= 0.5 else 1.0
-    current_theta, current_rho = move_to_position(current_theta, current_rho, 0.0, new_rho, rho_max_steps)
-    save_current_position(current_theta, current_rho, "", 0)
+    current_theta, current_rho = move_to_position(current_theta, current_rho, current_theta, new_rho, rho_max_steps)
+    save_current_position(0.0, current_rho, "", 0)
     time.sleep(0.5)
     
     if coordinates:
@@ -255,13 +256,14 @@ def main():
             
             resume = False  # Nur beim ersten Treffer fortsetzen
 
-            print(f"Starte bei Index {start_index}, laube bis {len(coordinates)} in Datei {file}")
             for i in range(start_index, len(coordinates)):
                 theta, rho = coordinates[i]
                 current_theta, current_rho = move_to_position(current_theta, current_rho, theta, rho, rho_max_steps)
                 save_current_position(current_theta, current_rho, file, i + 1)
                 time.sleep(0.5)
+            # Ein Tisch wurde gezeichnet, der muss gereinigt werden, bevor wir den nächsten zeichnen
             dirtyTable = True
+            # Warte auf Knopfdruck, um fortzufahren
             wait_for_button_press()
 
     finally:
