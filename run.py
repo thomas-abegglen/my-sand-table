@@ -1,7 +1,6 @@
 import signal, time, os.path
 from Controller import Controller, FILENAME_PENDING_DRAWING
 from Playlist import Playlist
-from utils.TMC2209 import MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_CALIBRATION = "./calibration.json"
 
@@ -24,10 +23,10 @@ def main():
             print("no calibration file exists. Perform calibration...")
             #measure number of steps from Rho: 0.0 to Rho: 1.0
             #first step: move to Rho: 0.0
-            controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
+            controller.run_M_Rho_Until_Switch(Controller.DIR_BACKWARD)
 
             #second step: measure steps to Rho: 1.0
-            nbr_steps = controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_FORWARD)
+            nbr_steps = controller.run_M_Rho_Until_Switch(Controller.DIR_FORWARD)
 
             #safety margin: 40 steps
             nbr_steps -= 40
@@ -54,7 +53,7 @@ def main():
             clearTable = True
 
             #to start, make sure we're at Rho: 0.0
-            controller.run_M_Rho_Until_Switch(dir=MOTOR_DIR_BACKWARD)
+            controller.run_M_Rho_Until_Switch(Controller.DIR_BACKWARD)
 
         while running:
             print("running, clearTable:", clearTable)

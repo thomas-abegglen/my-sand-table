@@ -16,6 +16,9 @@ SWITCH_IN = 6
 
 NEXTTABLE_BUTTON = 26
 
+HIGH = 1
+LOW = 0
+
 NbrOfCallsUntilMockValue = {
     SWITCH_IN: [0, 50, True, False],
     SWITCH_OUT: [0, 50, True, False],

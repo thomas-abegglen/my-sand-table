@@ -3,7 +3,6 @@ import utils.GPIOs as GPIOs
 import glob, os, math, random, time, threading
 import numpy as np
 import json
-from utils.TMC2209 import TMC2209, MOTOR_DIR_BACKWARD, MOTOR_DIR_FORWARD
 
 FILENAME_PENDING_DRAWING = "./pending_drawing.json"
 
@@ -13,6 +12,8 @@ CLEAR_MODE_OUT_OUT = "out_out"
 CLEAR_MODE_IN_IN = "in_in"
 
 class Controller():
+    DIR_FORWARD = 0
+    DIR_BACKWARD = 1
 
     SLOW_DEFAULT_SPEED = 1000 #nbr of steps per second
     SLOW_MAX_SPEED = 1500 #nbr of steps per second
@@ -22,11 +23,10 @@ class Controller():
     CALIBRATION_NBR_THETA_STEPS = "nbr_theta_steps"
     CALIBRATION_NBR_RHO_STEPS = "nbr_rho_steps"
 
-    M_Theta = TMC2209(dir_pin=GPIOs.MOTOR_THETA_DIR, step_pin=GPIOs.MOTOR_THETA_STEP, enable_pin=GPIOs.MOTOR_THETA_ENABLE, limit_switches=None)
-    M_Rho = TMC2209(dir_pin=GPIOs.MOTOR_RHO_DIR, step_pin=GPIOs.MOTOR_RHO_STEP, enable_pin=GPIOs.MOTOR_RHO_ENABLE, limit_switches=[GPIOs.SWITCH_OUT, GPIOs.SWITCH_IN])
     clearTable = False
     pendingShutdown = False
     current_rho_step_position = 0
+    current_theta_step_position = 0
 
     calibration = {
         CALIBRATION_NBR_THETA_STEPS: 8 * 200 * 320 / 12, #8: microsteps, 200: nbrOfSteps for the motor for one turn, 320: nbrOfTeeth of pully at axis, 12: nbrOfTeeth of pully at motor
@@ -53,43 +53,39 @@ class Controller():
         with open(file_name, "r") as json_file:
             return json.load(json_file)      
 
-    def run_M_Theta(self, steps, delay):
-        if steps != 0 and delay >= 0:
-            if steps > 0:
-                self.M_Theta.turn_steps(Dir=MOTOR_DIR_FORWARD, steps=abs(steps), stepdelay=delay)
-            else:
-                self.M_Theta.turn_steps(Dir=MOTOR_DIR_BACKWARD, steps=abs(steps), stepdelay=delay)
+    def step_motor(self, step_pin):
+        GPIOs.output(step_pin, GPIOs.HIGH)
+        time.sleep(0.0001)
+        GPIOs.output(step_pin, GPIOs.LOW)
 
-        self.M_Theta.stop()
-        self.M_Theta.running = False
-
-        # print("M_Theta done!")
-
-    def run_M_Rho(self, steps, delay):
-        if steps != 0 and delay >= 0:
-            if steps > 0:
-                self.M_Rho.turn_steps(Dir=MOTOR_DIR_FORWARD, steps=abs(steps), stepdelay=delay)
-            else:
-                self.M_Rho.turn_steps(Dir=MOTOR_DIR_BACKWARD, steps=abs(steps), stepdelay=delay)
-
-        self.M_Rho.stop()
-        self.M_Rho.running = False
-        self.current_rho_step_position += steps
-
-        # print("M_Rho done!")
+    def set_motor_direction(self, dir_pin, direction):
+        if direction == Controller.DIR_FORWARD:
+            GPIOs.output(dir_pin, GPIOs.LOW)
+        elif direction == Controller.DIR_BACKWARD:
+            GPIOs.output(dir_pin, GPIOs.HIGH)
+        else:
+            raise ValueError("Ungültige Richtung. Verwenden Sie 'Direction.FORWARD' oder 'Direction.BACKWARD'.")
     
-    def run_M_Rho_Until_Switch(self, dir):
-        if(dir == MOTOR_DIR_FORWARD):
-            steps = self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_OUT, stepdelay=0.0005)
+    def run_M_Rho_Until_Switch(self, direction):
+        if(direction == Controller.DIR_FORWARD):
+            steps = self.turn_until_switch(GPIOs.MOTOR_RHO_STEP, direction, GPIOs.SWITCH_OUT, stepdelay=0.0005)
             self.current_rho_step_position = steps
-            return steps
-        
-        elif(dir == MOTOR_DIR_BACKWARD):
-            steps = self.M_Rho.turn_until_switch(Dir=dir, limit_switch=GPIOs.SWITCH_IN, stepdelay=0.0005)
+            return steps            
+        elif(direction == Controller.DIR_BACKWARD):
+            steps = self.turn_until_switch(GPIOs.MOTOR_RHO_STEP, direction, GPIOs.SWITCH_IN, stepdelay=0.0005)
             self.current_rho_step_position = 0
             return steps
         else:
-            print("Unknown direction: ", dir)
+            print("Unknown direction: ", direction)
+
+    def turn_until_switch(self, step_pin, direction, switch_pin, stepdelay=0.0005):
+        self.set_motor_direction(GPIOs.MOTOR_RHO_DIR, direction)
+        steps = 0
+        while GPIOs.input(switch_pin) == GPIOs.HIGH:
+            self.step_motor(step_pin)
+            steps += 1
+            time.sleep(stepdelay)
+        return steps
 
     def get_steps(self, thr_file, reverse_file=False):
         with open(thr_file, 'r') as f:
@@ -178,28 +174,53 @@ class Controller():
 
     def draw_theta_rho_file(self, thr_file, reverse_file=False):
         steps = self.get_steps(thr_file, reverse_file)
-        steps = self.calc_deltasteps(steps)
-        steps_with_delays = self.add_delays(steps)
+        delta_steps = self.calc_deltasteps(steps)
+        
+        self.draw_steps(delta_steps)
 
-        self.draw_steps_with_delays(steps_with_delays)
+    def synchronized_move(self, delta_theta_steps, delta_rho_steps, theta_dir, rho_dir, base_delay):
+        max_steps = max(abs(delta_theta_steps), abs(delta_rho_steps))
+        theta_interval = max_steps / abs(delta_theta_steps) if delta_theta_steps != 0 else float('inf')
+        rho_interval = max_steps / abs(delta_rho_steps) if delta_rho_steps != 0 else float('inf')
 
-    def draw_steps_with_delays(self, steps_with_delays):
-        for i in range(len(steps_with_delays)):
+        theta_counter = 0
+        rho_counter = 0
+
+        self.set_motor_direction(GPIOs.MOTOR_THETA_DIR, theta_dir)
+        self.set_motor_direction(GPIOs.MOTOR_RHO_DIR, rho_dir)
+
+        for i in range(max_steps):
+            if i / theta_interval >= theta_counter and theta_counter < abs(delta_theta_steps):
+                self.step_motor(GPIOs.MOTOR_THETA_STEP)
+                theta_counter += 1
+            if i / rho_interval >= rho_counter and rho_counter < abs(delta_rho_steps):
+                self.step_motor(GPIOs.MOTOR_RHO_STEP)
+                rho_counter += 1
+            time.sleep(base_delay)
+
+
+    def draw_steps(self, steps):
+        for i in range(len(steps)):
             #print("rotor step:", steps_with_delays[i][0], "linear step:", steps_with_delays[i][1], "rotor delay:", steps_with_delays[i][2], "linear delay:", steps_with_delays[i][3])
             
-            #pass values to M_Theta/M_Rho and create threads
-            M_Theta_Thread = threading.Thread(target=self.run_M_Theta, args=(steps_with_delays[i][0], steps_with_delays[i][2],))
-            M_Rho_Thread = threading.Thread(target=self.run_M_Rho, args=(steps_with_delays[i][1], steps_with_delays[i][3],))
+            steps_theta = steps[i][0]
+            steps_rho = steps[i][1]
 
-            #start threads
-            self.M_Theta.running = True
-            self.M_Rho.running = True
-            M_Theta_Thread.start()
-            M_Rho_Thread.start()
+            if steps_theta > 0:
+                theta_dir = Controller.DIR_FORWARD
+            else:
+                theta_dir = Controller.DIR_BACKWARD    
 
-            #wait for threads to finish
-            M_Theta_Thread.join()
-            M_Rho_Thread.join()
+            if steps_rho > 0:
+                rho_dir = Controller.DIR_FORWARD
+            else:
+                rho_dir = Controller.DIR_BACKWARD
+
+
+            self.synchronized_move(steps_theta, steps_rho, theta_dir, rho_dir, base_delay=0.001)
+
+            self.current_theta_step_position += steps_theta    
+            self.current_rho_step_position += steps_rho
 
             if self.pendingShutdown:
                 print("shutdown detected, writing pending steps to file for later drawing...")
@@ -227,13 +248,6 @@ class Controller():
                 return self.current_rho_step_position / self.calibration[self.CALIBRATION_NBR_RHO_STEPS]
 
 
-    def stop_motors(self):
-        self.M_Theta.running = False
-        self.M_Rho.running = False
-        self.M_Theta.stop()
-        self.M_Rho.stop()
-        print("\n---------- Motors Stopped! ----------")
-
     def clear_table(self, clear_mode):
         print("Clearing table")
 
@@ -257,9 +271,8 @@ class Controller():
 
         steps = self.coors_to_steps(coors)
         delta_steps = self.calc_deltasteps(steps)
-        steps_with_delays = self.add_delays(delta_steps)
 
-        self.draw_steps_with_delays(steps_with_delays)
+        self.draw_steps(delta_steps)
 
         print("finished clearing table")
 
