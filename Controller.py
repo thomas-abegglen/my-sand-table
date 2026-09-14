@@ -36,6 +36,8 @@ class Controller():
     def __init__(self):
         print("initializing controller...")
         GPIOs.init()
+        self.enable_motor_relays()
+        self.enable_motors()
 
     def calibrate(self, nbr_theta_steps, nbr_rho_steps):
         self.calibration[self.CALIBRATION_NBR_THETA_STEPS] = nbr_theta_steps
@@ -279,13 +281,30 @@ class Controller():
     def NextTableButtonPressed(self):
         return GPIOs.input(GPIOs.NEXTTABLE_BUTTON)
 
+    def enable_motors(self):
+        GPIOs.output(GPIOs.MOTOR_RHO_ENABLE, GPIOs.LOW)
+        GPIOs.output(GPIOs.MOTOR_THETA_ENABLE, GPIOs.LOW)
+
+    def disable_motors(self):
+        GPIOs.output(GPIOs.MOTOR_RHO_ENABLE, GPIOs.HIGH)
+        GPIOs.output(GPIOs.MOTOR_THETA_ENABLE, GPIOs.HIGH)
+
+    def enable_motor_relays(self):
+        GPIOs.output(GPIOs.MOTOR_RHO_RELAY, GPIOs.LOW)
+        GPIOs.output(GPIOs.MOTOR_THETA_RELAY, GPIOs.LOW)
+
+    def disable_motor_relays(self):
+        GPIOs.output(GPIOs.MOTOR_RHO_RELAY, GPIOs.HIGH)
+        GPIOs.output(GPIOs.MOTOR_THETA_RELAY, GPIOs.HIGH)
+
     def shutdown(self):
         print("controller.shutdown")
 
         self.pendingShutdown = True
         
         print("stopping motors...")
-        self.stop_motors()
+        self.disable_motors()
+        self.disable_motor_relays()
 
         print("cleanup GPIOs")
         #GPIOs.cleanup()
