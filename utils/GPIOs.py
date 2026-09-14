@@ -19,6 +19,9 @@ SWITCH_IN = 6
 
 NEXTTABLE_BUTTON = 26
 
+HIGH = 1
+LOW = 0
+
 def init():
     print("initializing GPIOs...")
 
