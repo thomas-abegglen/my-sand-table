@@ -89,8 +89,16 @@ class Controller():
             time.sleep(stepdelay)
         return steps
 
+    def filter_comments(self,filepath, comment_prefixes=("//", "#")):
+        with open(filepath, "r", encoding="utf-8") as f:
+            for line in f:
+                stripped = line.strip()
+                # Überspringt Zeilen, die mit einem der Präfixe beginnen oder leer sind
+                if stripped and not stripped.startswith(comment_prefixes):
+                    yield line
+
     def get_steps(self, thr_file, reverse_file=False):
-        coors = np.genfromtxt(thr_file, comments=("#", "//"), delimiter=" ", dtype=float, usecols=(0, 1), unpack=True)
+        coors = np.genfromtxt(self.filter_comments(thr_file), invalid_raise=False, delimiter=None, dtype=float, usecols=(0, 1))
         if(reverse_file):
             coors = np.flipud(coors)
 
@@ -154,7 +162,7 @@ class Controller():
                 rho_dir = Controller.DIR_BACKWARD
 
             print("steps_theta: {}, steps_rho: {}".format(steps_theta, steps_rho))
-            self.synchronized_move(steps_theta, steps_rho, theta_dir, rho_dir, base_delay=0.001)
+            self.synchronized_move(steps_theta, steps_rho, theta_dir, rho_dir, base_delay=0.0015)
 
             self.current_theta_step_position += steps_theta    
             self.current_rho_step_position += steps_rho

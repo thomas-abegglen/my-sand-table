@@ -4,7 +4,7 @@
             "name": "Python: File",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "run.py",
             "justMyCode": true
         }
     ]
