@@ -90,37 +90,12 @@ class Controller():
         return steps
 
     def get_steps(self, thr_file, reverse_file=False):
-        with open(thr_file, 'r') as f:
-            content = f.readlines()
-            
-        if reverse_file:
-            content.reverse()
+        coors = np.genfromtxt(thr_file, comments=("#", "//"), delimiter=" ", dtype=float, usecols=(0, 1), unpack=True)
+        if(reverse_file):
+            coors = np.flipud(coors)
 
-        lines = [line.rstrip('\n') for line in content]
-        #print("lines 1:", lines[:29])
-
-        createArray = True
-        steps = None
-        #print("steps 1:", steps)
-        for c in lines:
-            if c.startswith("//") or c.startswith("#") or len(c) == 0:
-                continue
-
-            theta = float(c[:c.find(" ")])
-            rho = float(c[c.find(" ")+1:])
-            #print("theta:", theta, "rho:", rho)
-
-            #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
-            theta = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * theta / (2 * math.pi))
-            rho = int(self.calibration[self.CALIBRATION_NBR_RHO_STEPS] * rho)
-
-                        
-            if createArray:
-                steps = np.array([theta, rho])
-                createArray = False
-            else:
-                steps = np.vstack((steps, [theta, rho]))
-
+        #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
+        steps = self.coors_to_steps(coors)
         return steps
 
     def calc_deltasteps(self, deltasteps):
@@ -131,48 +106,8 @@ class Controller():
 
     def coors_to_steps(self, coors):
         #print("coors_to_steps(", coors, ")")
-
-        steps = np.copy(coors)
-        for step in steps:
-            #konvertieren auf Steps (theta mit Anzahl Zähnen pro Umdrehung, rho mit Anzahl Zähnen 0->1 multiplizieren)
-            step[0] = int(self.calibration[self.CALIBRATION_NBR_THETA_STEPS] * step[0] / (2 * math.pi))
-            step[1] = int(self.calibration[self.CALIBRATION_NBR_RHO_STEPS] * step[1])
-
-        return steps
-
-    def add_delays(self, steps):
-        delays = np.array([0, 0])
-
-        for s in steps:
-            defaultSpeed = self.DEFAULT_SPEED
-            maxSpeed = self.MAX_SPEED
-            if max(abs(s[0]), abs(s[1])) < 100:
-                defaultSpeed = self.SLOW_DEFAULT_SPEED
-                maxSpeed = self.SLOW_MAX_SPEED
-
-            #print("step:", s)
-            elapsed_time = abs(s[0]) / defaultSpeed #wie lange dauert theta-Verschiebung mit DEFAULT_SPEED?
-            #print("elapsed_time:", elapsed_time)
-            if elapsed_time > 0 and abs(s[1]) / elapsed_time <= maxSpeed: #schaffen wir die rho-Verschiebung in der gleichen Zeit mit weniger als MAX_SPEED?
-                #print("Theta mit DEFAULT_SPEED")
-                Theta_delay = 1 / defaultSpeed #delay für Theta mit DEFAULT_SPEED berechnen
-                Rho_delay = elapsed_time / abs(s[1]) if s[1] != 0 else None #delay für Rho berechnen (sollte zwischen DEFAULT_SPEED und MAX_SPEED liegen)
-                #print("Theta_delay:", Theta_delay, "Rho_delay:", Rho_delay)
-            else:
-                #entweder ist die theta-Verschiebung 0 oder es müsste für Rho schneller gehen als mit MAX_SPEED
-                #print("Rho mit MAX_SPEED")
-                min_time = abs(s[1]) / maxSpeed #wie lange dauert rho-Verschiebung mit MAX_SPEED?
-                Theta_delay = min_time / abs(s[0]) if s[0] != 0 else None #delay für Rotor berechnen (sollte etwas unterhalb DEFAULT_SPEED liegen)
-                Rho_delay = 1 / maxSpeed #delay für Linear mit MAX_SPEED berechnen
-                #print("Rotor_delay:", Theta_delay, "Linear_delay:", Rho_delay)
-    
-            delays = np.vstack((delays, [Theta_delay, Rho_delay]))
-
-        #print("delays:", delays)
-        delays = delays[1:]
-        steps_with_delays = np.concatenate((steps, delays), axis=1)
-
-        return steps_with_delays
+        faktoren = np.array([self.calibration[self.CALIBRATION_NBR_THETA_STEPS] / (2 * math.pi), self.calibration[self.CALIBRATION_NBR_RHO_STEPS]])
+        return np.round(coors * faktoren).astype(int)
 
     def draw_theta_rho_file(self, thr_file, reverse_file=False):
         steps = self.get_steps(thr_file, reverse_file)
@@ -218,7 +153,7 @@ class Controller():
             else:
                 rho_dir = Controller.DIR_BACKWARD
 
-
+            print("steps_theta: {}, steps_rho: {}".format(steps_theta, steps_rho))
             self.synchronized_move(steps_theta, steps_rho, theta_dir, rho_dir, base_delay=0.001)
 
             self.current_theta_step_position += steps_theta    
