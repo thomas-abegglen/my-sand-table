@@ -1,11 +1,10 @@
-./THR/keep/sharpSawtooth.thr
-./THR/keep/Reverse-HEP.thr
+./THR/keep/dither_gears.thr
 ./THR/keep/dougsSpiralTriangle2.thr
-./THR/keep/secretgarden.thr
 ./THR/keep/hero_5loop1.thr
 ./THR/keep/hero_7loop4.thr
 ./THR/keep/hero_9wave2.thr
 ./THR/keep/hero_11loop2.thr
 ./THR/keep/hero_13wave1.thr
-./THR/keep/HexagonAlley.thr
-./THR/keep/HexagonAlleyTight.thr
+./THR/keep/Reverse-HEP.thr
+./THR/keep/secretgarden.thr
+./THR/keep/sharpSawtooth.thr
