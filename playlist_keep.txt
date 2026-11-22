@@ -1,4 +1,5 @@
 ./THR/keep/dither_gears.thr
+./THR/keep/dither_wormhole.thr
 ./THR/keep/dougsSpiralTriangle2.thr
 ./THR/keep/hero_5loop1.thr
 ./THR/keep/hero_7loop4.thr
